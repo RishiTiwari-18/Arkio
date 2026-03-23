@@ -22,10 +22,10 @@ const userSchema = new mongoose.Schema(
 			minlength: 6,
 			select: false,
 		},
-		avatar: {
-			type: String,
-			default: '',
-		},
+		// avatar: {
+		// 	type: String,
+		// 	default: '',
+		// },
 		isVerified: {
 			type: Boolean,
 			default: false,
@@ -36,19 +36,18 @@ const userSchema = new mongoose.Schema(
 	}
 );
 
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
 	if (!this.isModified('password')) {
-		return next();
+		return
 	}
 
 	this.password = await bcrypt.hash(this.password, 10);
-	next();
 });
 
 userSchema.methods.comparePassword = async function (plainPassword) {
 	return bcrypt.compare(plainPassword, this.password);
 };
 
-const User = mongoose.model('User', userSchema);
+const userModel = mongoose.model('User', userSchema);
 
-export default User;
+export default userModel;
