@@ -16,8 +16,8 @@ transporter.verify()
     .then(() => console.error('Email server is ready to send messages'))
     .catch((err) => console.log('Error connecting to email server:', err))
 
-export const sendVerificationEmail = async ({ name, email}) => {
-    const verificationUrl = `${process.env.CLIENT_URL}/verify-email?token=`
+export const sendVerificationEmail = async ({ name, email, token}) => {
+    const verificationUrl = `http://localhost:3000/api/auth/verify-email?token=${token}`
 
     const html = verificationEmailTemplate({ name, verificationUrl, expiryHours: 1 })
 

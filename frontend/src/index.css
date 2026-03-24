@@ -1,13 +1,13 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/inter";
+@import "@fontsource-variable/sora";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
     --font-heading: var(--font-sans);
-    --font-sans: 'Inter Variable', sans-serif;
+    --font-sans: 'Sora Variable', sans-serif;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -46,85 +46,160 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
+
+    /* ── Arkio. brand tokens ── */
+    --color-teal-50: var(--teal-50);
+    --color-teal-100: var(--teal-100);
+    --color-teal-200: var(--teal-200);
+    --color-teal-400: var(--teal-400);
+    --color-teal-600: var(--teal-600);
+    --color-teal-800: var(--teal-800);
+    --color-teal-900: var(--teal-900);
 }
 
+/* ─────────────────────────────────────────────
+   LIGHT MODE
+   (used on email template, landing page light sections)
+───────────────────────────────────────────── */
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
+    /* ── backgrounds ── */
+    --background: oklch(0.97 0.012 168);          /* #f5f9f7 — light teal tint */
+    --foreground: oklch(0.13 0.03 168);           /* #0c1a16 — deep dark teal */
+
+    /* ── cards & popovers ── */
+    --card: oklch(1 0 0);                         /* #ffffff */
+    --card-foreground: oklch(0.13 0.03 168);      /* #0c1a16 */
     --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
+    --popover-foreground: oklch(0.13 0.03 168);
+
+    /* ── primary — Arkio. teal ── */
+    --primary: oklch(0.59 0.13 168);             /* #1d9e75 — brand teal */
+    --primary-foreground: oklch(1 0 0);          /* white text on teal buttons */
+
+    /* ── secondary ── */
+    --secondary: oklch(0.93 0.025 168);          /* #e1f5ee — teal 50 */
+    --secondary-foreground: oklch(0.13 0.03 168);
+
+    /* ── muted ── */
+    --muted: oklch(0.93 0.025 168);              /* #e1f5ee */
+    --muted-foreground: oklch(0.45 0.055 168);   /* #3a6660 — placeholder text */
+
+    /* ── accent ── */
+    --accent: oklch(0.88 0.06 168);              /* #9fe1cb — teal 100 */
+    --accent-foreground: oklch(0.13 0.03 168);
+
+    /* ── destructive ── */
+    --destructive: oklch(0.577 0.245 27.325);    /* #e24b4a — red, unchanged */
+
+    /* ── borders & inputs ── */
+    --border: oklch(0.85 0.045 168);             /* #c8e8e0 — soft teal border */
+    --input: oklch(0.85 0.045 168);
+    --ring: oklch(0.59 0.13 168);               /* #1d9e75 — focus ring */
+
+    /* ── radius ── */
+    --radius: 0.75rem;                           /* slightly rounder than default */
+
+    /* ── sidebar ── */
+    --sidebar: oklch(0.95 0.018 168);            /* #f0faf6 */
+    --sidebar-foreground: oklch(0.13 0.03 168);
+    --sidebar-primary: oklch(0.59 0.13 168);
+    --sidebar-primary-foreground: oklch(1 0 0);
+    --sidebar-accent: oklch(0.88 0.06 168);
+    --sidebar-accent-foreground: oklch(0.13 0.03 168);
+    --sidebar-border: oklch(0.85 0.045 168);
+    --sidebar-ring: oklch(0.59 0.13 168);
+
+    /* ── charts ── teal ramp ── */
+    --chart-1: oklch(0.59 0.13 168);            /* #1d9e75 */
+    --chart-2: oklch(0.72 0.11 168);            /* #5dcaa5 */
+    --chart-3: oklch(0.82 0.07 168);            /* #9fe1cb */
+    --chart-4: oklch(0.44 0.09 168);            /* #0f6e56 */
+    --chart-5: oklch(0.30 0.06 168);            /* #085041 */
+
+    /* ── Arkio. brand scale ── */
+    --teal-50: oklch(0.96 0.025 168);
+    --teal-100: oklch(0.88 0.06 168);
+    --teal-200: oklch(0.77 0.1 168);
+    --teal-400: oklch(0.59 0.13 168);
+    --teal-600: oklch(0.44 0.09 168);
+    --teal-800: oklch(0.30 0.06 168);
+    --teal-900: oklch(0.22 0.04 168);
 }
 
+/* ─────────────────────────────────────────────
+   DARK MODE — main Arkio. app theme
+───────────────────────────────────────────── */
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+    /* ── backgrounds ── */
+    --background: oklch(0.10 0.012 168);          /* #0c0f0f — main bg */
+    --foreground: oklch(0.95 0.02 168);           /* #eefaf6 — primary text */
+
+    /* ── cards & popovers ── */
+    --card: oklch(0.13 0.018 168);               /* #111a18 — card bg */
+    --card-foreground: oklch(0.95 0.02 168);
+
+    --popover: oklch(0.12 0.015 168);            /* #0e1414 — sidebar bg */
+    --popover-foreground: oklch(0.95 0.02 168);
+
+    /* ── primary — Arkio. teal ── */
+    --primary: oklch(0.59 0.13 168);             /* #1d9e75 — brand teal */
+    --primary-foreground: oklch(1 0 0);          /* white text on teal */
+
+    /* ── secondary ── */
+    --secondary: oklch(0.15 0.02 168);           /* #182420 — hover bg */
+    --secondary-foreground: oklch(0.95 0.02 168);
+
+    /* ── muted ── */
+    --muted: oklch(0.15 0.02 168);               /* #182420 */
+    --muted-foreground: oklch(0.60 0.075 168);   /* #8ab8b0 — muted text */
+
+    /* ── accent ── */
+    --accent: oklch(0.59 0.13 168 / 12%);        /* teal 12% — active item bg */
+    --accent-foreground: oklch(0.77 0.1 168);    /* #5dcaa5 — accent text */
+
+    /* ── destructive ── */
+    --destructive: oklch(0.704 0.191 22.216);    /* #e24b4a */
+
+    /* ── borders & inputs ── */
+    --border: oklch(1 0 0 / 8%);                 /* white 8% — default border */
+    --input: oklch(0.12 0.015 168);              /* #0e1414 — input bg */
+    --ring: oklch(0.59 0.13 168 / 50%);         /* teal 50% — focus ring */
+
+    /* ── sidebar ── */
+    --sidebar: oklch(0.11 0.015 168);            /* #0e1414 */
+    --sidebar-foreground: oklch(0.95 0.02 168);
+    --sidebar-primary: oklch(0.59 0.13 168);
+    --sidebar-primary-foreground: oklch(1 0 0);
+    --sidebar-accent: oklch(0.59 0.13 168 / 12%);
+    --sidebar-accent-foreground: oklch(0.82 0.07 168); /* #9fe1cb */
+    --sidebar-border: oklch(1 0 0 / 5%);
+    --sidebar-ring: oklch(0.59 0.13 168 / 50%);
+
+    /* ── charts ── */
+    --chart-1: oklch(0.59 0.13 168);
+    --chart-2: oklch(0.72 0.11 168);
+    --chart-3: oklch(0.82 0.07 168);
+    --chart-4: oklch(0.44 0.09 168);
+    --chart-5: oklch(0.30 0.06 168);
+
+    /* ── Arkio. brand scale ── */
+    --teal-50: oklch(0.96 0.025 168);
+    --teal-100: oklch(0.88 0.06 168);
+    --teal-200: oklch(0.77 0.1 168);
+    --teal-400: oklch(0.59 0.13 168);
+    --teal-600: oklch(0.44 0.09 168);
+    --teal-800: oklch(0.30 0.06 168);
+    --teal-900: oklch(0.22 0.04 168);
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+    * {
+        @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
+    body {
+        @apply bg-background text-foreground;
     }
-  html {
-    @apply font-sans;
+    html {
+        @apply font-sans;
     }
 }

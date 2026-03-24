@@ -22,10 +22,7 @@ export const verificationEmailTemplate = ({ name, verificationUrl, expiryHours =
                   <td>
                     <table role="presentation" cellpadding="0" cellspacing="0">
                       <tr>
-                        <td style="background-color:#1d9e75;border-radius:9px;width:32px;height:32px;text-align:center;vertical-align:middle;">
-                          <span style="display:inline-block;width:11px;height:11px;border-radius:50%;border:2.5px solid #ffffff;"></span>
-                        </td>
-                        <td style="padding-left:10px;">
+                        <td>
                           <span style="font-size:16px;font-weight:700;color:#eefaf6;">Arkio.</span>
                         </td>
                       </tr>
@@ -54,7 +51,7 @@ export const verificationEmailTemplate = ({ name, verificationUrl, expiryHours =
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
                 <tr>
                   <td style="background-color:#f0faf6;border:1.5px solid #c8ede0;border-radius:10px;padding:14px 16px;font-size:11px;font-family:monospace;color:#1d9e75;word-break:break-all;">
-                    ${verificationUrl}
+                    <a href="${verificationUrl}" style="color:#1d9e75;text-decoration:none;word-break:break-all;">${verificationUrl}</a>
                   </td>
                 </tr>
               </table>
@@ -74,9 +71,9 @@ export const verificationEmailTemplate = ({ name, verificationUrl, expiryHours =
               <!-- Expiry warning -->
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
                 <tr>
-                  <td style="background-color:#f6fbf8;border:1.5px solid #d3ebdf;border-radius:8px;padding:12px 14px;font-size:12px;color:#446a61;line-height:1.6;">
-                    <strong style="color:#1b5f4a;">This link expires in ${expiryHours} hours.</strong>
-                    If it expires, you can request a new one from the login page.
+                  <td style="background-color:#fff8db;border:1.5px solid #f2d37a;border-radius:8px;padding:12px 14px;font-size:12px;color:#6e5a1f;line-height:1.6;">
+                    <strong style="color:#7a621c;">This link expires in ${expiryHours} hours.</strong>
+                    If it expires, you can request a new one from the <a href="${process.env.CLIENT_URL}/login" style="color:#1d9e75;text-decoration:none;font-weight:600;">login page</a>.
                   </td>
                 </tr>
               </table>
