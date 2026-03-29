@@ -3,6 +3,7 @@ import { getMeController, loginController, registerController, verifyEmailContro
 import asyncHandler from "../utils/AsyncHandler.js"
 import { loginValidator, registerValidator } from "../validators/auth.validator.js"
 import validate from "../middlewares/validate.js"
+import authUser from "../middlewares/auth.middleware.js"
 
 const authRouter = Router()
 
@@ -14,6 +15,6 @@ authRouter.get("/verify-email", asyncHandler(verifyEmailController))
 
 authRouter.post("/login", loginValidator, validate,  asyncHandler(loginController))
 
-authRouter.post("/get-me", asyncHandler(getMeController))
+authRouter.get("/get-me", authUser, asyncHandler(getMeController))
 
 export default authRouter

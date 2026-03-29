@@ -118,7 +118,8 @@ export const loginController = async (req, res) => {
         user: {
             id: user._id,   
             email: user.email,
-            username: user.username
+            username: user.username,
+            isVerified: user.isVerified
         }   
     })
 
@@ -126,7 +127,18 @@ export const loginController = async (req, res) => {
 }
 
 export const getMeController = async (req, res) => {
+    const userId = req.user.id
+
+    const user = await userModel.findById(userId)
     
+    if(!user){
+        throw new AppError("User not found", 404)
+    }
+
+    res.status(200).json({
+        success: true,
+        user
+    })
 }
 
 
