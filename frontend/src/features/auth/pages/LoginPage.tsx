@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Background from "../components/Background";
 import useAuth from "../hooks/useAuth";
+import { toast } from "sonner";
+import { useSelector } from "react-redux";
 
 // import { ModeToggle } from "@/components/shared/mode-toggle"
 
@@ -25,16 +27,18 @@ export default function LoginPage() {
       password: "",
     },
   });
+  const LoginError = useSelector((state: any) => state.auth.error)
 
   const { handleLogin } = useAuth();
   const navigate = useNavigate();
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      await handleLogin(data);
+      const res = await handleLogin(data);
+      toast.success(res.message)
       navigate("/");
     } catch (error) {
-      console.error("Login failed:", error);
+      toast.error(LoginError)
     }
     
   };

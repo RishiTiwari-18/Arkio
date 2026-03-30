@@ -11,6 +11,7 @@ const useAuth = () => {
       dispatch(setLoading(true));
       const res = await loginApi(data);
       dispatch(setUser(res.user));
+      return res
     } catch (error: any) {
       dispatch(setError(error.response?.data?.message));
     } finally {

@@ -5,6 +5,7 @@ import errorHandler from './middlewares/errorHandler.js';
 import notFound from './middlewares/notFound.js';
 import cors from 'cors';
 import morgan from 'morgan';
+import chatRouter from './routes/chat.route.js';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(morgan('dev'))
 //* routes
 
 app.use("/api/auth", authRouter)
+app.use("/api/chats", chatRouter)
 
 // app.get('/', (req, res) => {
 // 	res.status(200).json({ message: 'Server is running' });
