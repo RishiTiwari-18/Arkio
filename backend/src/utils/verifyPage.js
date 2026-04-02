@@ -1,4 +1,8 @@
-const buildVerifyPage = ({ success, title, message, showResend = false }) => `
+const buildVerifyPage = ({ success, title, message, showResend = false }) => {
+  const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173'
+  const loginUrl = `${clientUrl}/login`
+
+  return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,18 +14,19 @@ const buildVerifyPage = ({ success, title, message, showResend = false }) => `
  
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0a0d0d;
-      color: #eefaf6;
+      background: #0a0a0a;
+      color: #f5f5f5;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 24px;
     }
  
     .card {
-      background: #111a18;
-      border: 1px solid rgba(255,255,255,0.08);
+      background: #121212;
+      border: 1px solid #2a2a2a;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.55);
       border-radius: 20px;
       padding: 48px 40px;
       max-width: 480px;
@@ -39,7 +44,7 @@ const buildVerifyPage = ({ success, title, message, showResend = false }) => `
     .logo-icon {
       width: 34px;
       height: 34px;
-      background: #1d9e75;
+      background: #7c9082;
       border-radius: 10px;
       display: flex;
       align-items: center;
@@ -48,7 +53,7 @@ const buildVerifyPage = ({ success, title, message, showResend = false }) => `
     .logo-name {
       font-size: 18px;
       font-weight: 700;
-      color: #eefaf6;
+      color: #f5f5f5;
       letter-spacing: -0.3px;
     }
  
@@ -62,20 +67,20 @@ const buildVerifyPage = ({ success, title, message, showResend = false }) => `
       justify-content: center;
       margin: 0 auto 24px;
     }
-    .icon-wrap.success { background: rgba(29,158,117,0.12); border: 1.5px solid rgba(29,158,117,0.25); }
-    .icon-wrap.error   { background: rgba(226,75,74,0.1);   border: 1.5px solid rgba(226,75,74,0.2); }
+    .icon-wrap.success { background: rgba(124,144,130,0.14); border: 1px solid rgba(124,144,130,0.32); }
+    .icon-wrap.error   { background: rgba(199,62,58,0.10); border: 1px solid rgba(199,62,58,0.22); }
  
     h1 {
       font-size: 24px;
       font-weight: 700;
       letter-spacing: -0.4px;
       margin-bottom: 10px;
-      color: #eefaf6;
+      color: #f5f5f5;
     }
  
     p {
       font-size: 14px;
-      color: #8ab8b0;
+      color: #b9bcc4;
       line-height: 1.7;
       margin-bottom: 28px;
     }
@@ -91,14 +96,14 @@ const buildVerifyPage = ({ success, title, message, showResend = false }) => `
       cursor: pointer;
       border: none;
       font-family: inherit;
-      transition: opacity 0.15s;
+      transition: transform 0.15s, opacity 0.15s;
     }
-    .btn:hover { opacity: 0.88; }
-    .btn-primary { background: #1d9e75; color: #fff; }
+    .btn:hover { opacity: 0.92; transform: translateY(-1px); }
+    .btn-primary { background: #7c9082; color: #fff; }
     .btn-ghost {
-      background: transparent;
-      color: #5dcaa5;
-      border: 0.5px solid rgba(29,158,117,0.3);
+      background: rgba(124,144,130,0.08);
+      color: #c2cad8;
+      border: 1px solid rgba(124,144,130,0.28);
       margin-top: 12px;
     }
  
@@ -110,30 +115,30 @@ const buildVerifyPage = ({ success, title, message, showResend = false }) => `
       gap: 10px;
     }
     .resend-form input {
-      background: #0e1414;
-      border: 0.5px solid rgba(255,255,255,0.08);
+      background: #1a1a1a;
+      border: 1px solid #303030;
       border-radius: 10px;
       padding: 11px 14px;
       font-size: 13px;
-      color: #c8e8e0;
+      color: #f5f5f5;
       font-family: inherit;
       outline: none;
       width: 100%;
       text-align: center;
     }
-    .resend-form input::placeholder { color: #3a6660; }
-    .resend-form input:focus { border-color: rgba(29,158,117,0.5); }
+    .resend-form input::placeholder { color: #7f8491; }
+    .resend-form input:focus { border-color: rgba(124,144,130,0.6); }
  
     .divider {
       width: 100%;
       height: 1px;
-      background: rgba(255,255,255,0.06);
+      background: #2a2a2a;
       margin: 24px 0;
     }
  
     .footer-text {
       font-size: 12px;
-      color: #2e5a54;
+      color: #7f8491;
       margin-bottom: 0;
     }
   </style>
@@ -160,10 +165,10 @@ const buildVerifyPage = ({ success, title, message, showResend = false }) => `
     <div class="icon-wrap ${success ? 'success' : 'error'}">
       ${success
         ? `<svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-             <path d="M8 16.5L13.5 22L24 11" stroke="#1d9e75" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+             <path d="M8 16.5L13.5 22L24 11" stroke="#7c9082" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
            </svg>`
         : `<svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-             <path d="M11 11L21 21M21 11L11 21" stroke="#e24b4a" stroke-width="2.5" stroke-linecap="round"/>
+             <path d="M11 11L21 21M21 11L11 21" stroke="#c73e3a" stroke-width="2.5" stroke-linecap="round"/>
            </svg>`
       }
     </div>
@@ -172,7 +177,7 @@ const buildVerifyPage = ({ success, title, message, showResend = false }) => `
     <p>${message}</p>
  
     ${success ? `
-      <a href="${process.env.CLIENT_URL}/login" class="btn btn-primary">
+      <a href="${loginUrl}" class="btn btn-primary">
         Go to login →
       </a>
     ` : ''}
@@ -187,11 +192,11 @@ const buildVerifyPage = ({ success, title, message, showResend = false }) => `
         />
         <button type="submit" class="btn btn-primary">Resend verification email</button>
       </form>
-      <a href="${process.env.CLIENT_URL}" class="btn btn-ghost">Back to home</a>
+      <a href="${clientUrl}" class="btn btn-ghost">Back to home</a>
     ` : ''}
  
     ${!success && !showResend ? `
-      <a href="${process.env.CLIENT_URL}" class="btn btn-ghost">Back to home</a>
+      <a href="${clientUrl}" class="btn btn-ghost">Back to home</a>
     ` : ''}
  
     <div class="divider"></div>
@@ -201,5 +206,6 @@ const buildVerifyPage = ({ success, title, message, showResend = false }) => `
 </body>
 </html>
 `
+}
 
 export default buildVerifyPage

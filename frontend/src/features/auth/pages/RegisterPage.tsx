@@ -41,21 +41,17 @@ export default function RegisterPage() {
   return (
     <main className="h-screen p-4 w-screen flex items-center justify-center">
       <Background/>
-      <div className="max-w-5xl p-4 w-full flex gap-4 rounded-2xl bg-card">
-        <div className=" relative max-md:hidden rounded-xl overflow-hidden flex-1  max-w-[50%]">
+      <div className="max-w-5xl p-4 w-full flex gap-4 rounded-2xl bg-card/60 backdrop-blur-sm">
+                <div className=" relative rounded-xl max-md:hidden overflow-hidden flex-1  max-w-[50%]">
           <div className=" inset-0  z-0 absolute">
-            <img
-              className="h-full w-full object-cover"
-              src="https://images.unsplash.com/photo-1533134486753-c833f0ed4866?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt=""
-            />
+            <img className="h-full w-full object-cover" src="https://images.unsplash.com/photo-1533134486753-c833f0ed4866?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" />
           </div>
-          <div className="flex p-4 absolute bg-background/60 w-full  h-full flex-col justify-between">
-            <span className=" text-2xl font-semibold">Arkio.</span>
+          <div className="flex p-4 absolute bg-background/20 backdrop-blur-[1px] dark:backdrop-blur-none dark:bg-background/40 w-full  h-full flex-col justify-between">
+            <span className=" text-2xl text-white dark:text-forground font-semibold">Arkio.</span>
             <div className="">
-              <h2 className="text-2xl font-bold">Think freely,</h2>
+              <h2 className="text-2xl text-white dark:text-forground font-bold">Think freely,</h2>
               <h2 className="text-2xl font-bold text-primary">build faster.</h2>
-              <p className="text-sm mt-2 text-primary/60">
+              <p className="text-sm mt-2 text-background dark:text-primary/60">
                 Your AI. Your conversations. <br />
                 Always right where you left off.
               </p>

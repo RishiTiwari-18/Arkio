@@ -6,7 +6,7 @@ function Background() {
       <div className="relative min-h-screen bg-background overflow-hidden">
         {/* BIG GLOW BLOB */}
         <motion.div
-          className="absolute w-170 h-170 bg-primary/30 rounded-full blur-[150px] -top-24 -left-100 md:-left-24"
+          className="absolute w-170 h-170 bg-primary/40 dark:bg-primary/30 rounded-full blur-[150px] -top-24 -left-100 md:-left-24"
           animate={{
             x: [0, 40, -30, 0],
             y: [0, -60, 20, 0],
@@ -17,7 +17,7 @@ function Background() {
 
         {/* SECONDARY GLOW */}
         <motion.div
-          className="absolute w-130 h-130 bg-accent/30 rounded-full blur-[120px] -bottom-28 -right-24"
+          className="absolute w-130 h-130 bg-accent/60 dark:bg-accent/30 rounded-full blur-[120px] -bottom-28 -right-24"
           animate={{
             x: [0, -50, 30, 0],
             y: [0, 40, -20, 0],
@@ -28,7 +28,7 @@ function Background() {
 
         {/* EXTRA GLOW (RIGHT BALANCE) */}
         <motion.div
-          className="absolute max-md:hidden w-90 h-90 bg-primary/35 rounded-full blur-[100px] top-[8%] right-[8%]"
+          className="absolute max-md:hidden w-90 h-90 bg-primary/40 dark:bg-primary/35 rounded-full blur-[100px] top-[8%] right-[8%]"
           animate={{
             x: [0, -20, 15, 0],
             y: [0, 25, -15, 0],
@@ -91,7 +91,7 @@ function Background() {
         />
 
         <motion.div
-          className="absolute w-70 h-70 bg-primary/35 blur-[100px] rounded-full bottom-10 left-90"
+          className="absolute w-70 h-70 bg-primary/40 dark:bg-primary/35 blur-[100px] rounded-full bottom-10 left-90"
           animate={{
             x: [0, -20, 15, 0],
             y: [0, 25, -15, 0],
@@ -112,7 +112,7 @@ function Background() {
         />
 
         {/* GLASS MORPH OVERLAY */}
-        <div className="pointer-events-none absolute inset-0 z-20  bg-white/18 backdrop-blur-xs dark:bg-white/3" />
+        <div className="pointer-events-none absolute inset-0 z-20  dark:backdrop-blur-xs dark:bg-white/3" />
       </div>
     </div>
   );

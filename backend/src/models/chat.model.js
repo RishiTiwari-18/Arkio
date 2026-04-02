@@ -10,7 +10,6 @@ const chatSchema = new mongoose.Schema(
 		},
 		title: {
 			type: String,
-			default: 'New Chat',
 			trim: true,
 		},
 	},

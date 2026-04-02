@@ -6,6 +6,7 @@ import useAuth from "@/features/auth/hooks/useAuth";
 export default function App() {
   const { handleGetMe } = useAuth()
 
+
   useEffect(() => {
     handleGetMe();
   }, []);
