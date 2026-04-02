@@ -20,13 +20,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const staticHistory = [
-  "Hey, make complete DBMS notes for unit 1",
-  "Summarize this Java chapter in easy language",
-  "Create a 7-day revision plan for RGPV exams",
-  "How to build auth flow in React + Redux?",
-  "Explain operating system deadlock with examples",
-];
+// const staticHistory = [
+//   "Hey, make complete DBMS notes for unit 1",
+//   "Summarize this Java chapter in easy language",
+//   "Create a 7-day revision plan for RGPV exams",
+//   "How to build auth flow in React + Redux?",
+//   "Explain operating system deadlock with examples",
+// ];
 
 const staticChats = [
   {
@@ -59,6 +59,9 @@ export default function Dashboard() {
   const [pendingImage, setPendingImage] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const { history: chats } = useSelector((state: any) => state.chat);
+  const { handleGetChats } = useChat();
 
   const processImageFile = (file: File) => {
     if (!file.type.startsWith("image/")) return;
@@ -95,6 +98,11 @@ export default function Dashboard() {
     setPendingImage(null);
   };
 
+
+  useEffect(() => {
+    handleGetChats();
+  },[])
+
   useEffect(() => {
     initializeSocketClient();
   }, [initializeSocketClient]);
@@ -110,14 +118,14 @@ export default function Dashboard() {
             History
           </p>
           <div className="space-y-1">
-            {staticHistory.map((item) => (
+            {chats.map((item: { _id: string }) => (
               <button
-                key={item}
+                key={item._id}
                 type="button"
                 className="w-full rounded-md py-2 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
               >
                 <span className="px-3 block overflow-hidden whitespace-nowrap mask-[linear-gradient(to_right,black_78%,transparent)]">
-                  {item}
+                  {item.title}
                 </span>
               </button>
             ))}

@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { setChats, setError, setLoading } from "../chats.slice";
+import { addMessages, setError, setHistory, setLoading } from "../chats.slice";
 import {
   deleteChat,
   getChats,
@@ -16,15 +16,13 @@ const useChat = () => {
     try {
       dispatch(setLoading(true));
       const data = await sendMessage({ message, chatId });
-      const {chat, aiMessage} = data
-      dispatch(setChats((prev: any) => {
-        return {
-          ...prev, [chat.title]: {
-            ...chat,
-            messages: [{content: message, role: "user"}, aiMessage]
-          }
-        }
-      }))
+      dispatch(
+        addMessages({
+          chatId: data.chatId,
+          chat: data.chat,
+          newMessages: data.newMessages,
+        })
+      );
 
     } catch (error: any) {
       dispatch(
@@ -39,7 +37,8 @@ const useChat = () => {
     try {
       dispatch(setLoading(true));
       const res = await getChats();
-      return res;
+      dispatch(setHistory(res.chats));
+      return res.chats;
     } catch (error: any) {
       dispatch(
         setError(error.response?.data?.message || "Failed to fetch chats"),
