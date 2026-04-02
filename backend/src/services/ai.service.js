@@ -24,7 +24,8 @@ export const generateContent = async (message) => {
 export const generateTitle = async (message) => {
     const response = await mistral.invoke([
         new SystemMessage(`You are a helpful assistant that generates titles for the given content.
-            user will provide you with some content and you will generate a title for that content. The title should be concise and should capture the essence of the content. The title should be between 5 and 10 words.`),
+            user will provide you with some content and you will generate a title for that content. The title should be concise and should capture the essence of the content. The title should be between 5 and 10 words.
+            Return only plain title text as a single line. Do not use quotes, markdown, bullets, prefixes, or suffixes.`),
         new HumanMessage(`generate a title for the following content: ${message}`)
     ])
 

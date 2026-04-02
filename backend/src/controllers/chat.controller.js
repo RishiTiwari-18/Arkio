@@ -39,9 +39,10 @@ export const sendMessage = async (req, res) => {
     })
 
     res.status(201).json({
-        chat,
-        aiMessage,
-    })
+      chatId: currentChatId,
+      chat: chat, // null if existing
+      newMessages: [userMessage, aiMessage],
+    });
 }
 
 export const getChats = async (req, res) => {
