@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import LoginPage from "../features/auth/pages/LoginPage";
 import RegisterPage from "../features/auth/pages/RegisterPage";
+import VerifyPage from "../features/auth/pages/VerifyPage";
 import Dashboard from "../features/chat/pages/Dashboard";
 import HomePage from "../features/chat/pages/HomePage";
 import Protected from "@/features/auth/components/Protected";
@@ -11,6 +12,7 @@ const routes = createBrowserRouter([
   {path: "/chat/:chatId", element: <Protected><Dashboard/></Protected>},
   {path: "/login", element: <LoginPage/>},
   {path: "/register", element: <RegisterPage/>},
+  {path: "/verify-email", element: <VerifyPage/>},
   {path: "*", element: <NotFound/>},
 ])
 

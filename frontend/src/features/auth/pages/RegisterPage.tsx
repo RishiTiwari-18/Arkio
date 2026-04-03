@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,9 @@ import zxcvbn from "zxcvbn";
 import { cn } from "@/lib/utils";
 import { useDeferredValue } from "react";
 import Background from "../components/Background";
+import useAuth from "../hooks/useAuth";
+import type { RegisterPayload } from "../types";
+import { toast } from "sonner";
 
 type RegisterFormValues = {
   email: string;
@@ -31,11 +34,17 @@ export default function RegisterPage() {
   const debouncedPassword = useDeferredValue(password);
   const result = zxcvbn(debouncedPassword);
   const strength = result.score; // 0–4
+  const { handleRegister } = useAuth();
+  const navigate = useNavigate();
 
-  console.log(strength);
-
-  const onSubmit = (_data: RegisterFormValues) => {
-    // TODO: wire to auth API
+  const onSubmit = async (data: RegisterPayload) => {
+    try {
+      await handleRegister(data);
+      toast.success("Verification email sent. Please check your inbox.");
+      navigate("/verify-email");
+    } catch (error: any) {
+      toast.error(error?.message || "Registration failed");
+    }
   };
 
   return (
