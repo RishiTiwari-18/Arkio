@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useChat from "../hooks/useChat";
-import { LogOut, ArrowLeft } from "lucide-react";
+import { LogOut} from "lucide-react";
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -18,9 +18,9 @@ export default function Sidebar() {
   const { user } = useSelector((state: any) => state.auth);
 
   const { history } = useSelector((state: any) => state.chat);
-  const displayName = user?.username || user?.name || "Rishi Tiwari";
-
-  const avatarLetter = displayName?.charAt(0)?.toUpperCase() || "R";
+  const displayName = user?.username || "User";
+  const displayEmail = user?.email || ""
+  const avatarLetter = displayName?.charAt(0)?.toUpperCase() || "U";
 
   return (
     <aside className="h-full flex flex-col w-60 p-1 bg-card border-r border-input">
@@ -72,7 +72,7 @@ export default function Sidebar() {
                   {displayName}
                 </p>
                 <p className="truncate text-xs text-muted-foreground">
-                  Personal account
+                  {displayEmail}
                 </p>
               </div>
             </div>
