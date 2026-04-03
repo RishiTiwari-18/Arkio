@@ -8,7 +8,7 @@ export default function NotFound() {
       <Background />
       <div className="relative z-10 text-center space-y-6 max-w-lg">
         <div className="space-y-2">
-          <div className="text-7xl font-bold bg-linear-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-pulse">
+          <div className="text-7xl font-bold bg-linear-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
             404
           </div>
           <h1 className="text-3xl font-semibold">Page not found</h1>
@@ -19,12 +19,12 @@ export default function NotFound() {
 
         <div className="flex gap-3 justify-center pt-4">
           <Link to="/">
-            <Button className="font-semibold rounded-lg h-11">
+            <Button className="font-semibold rounded-lg px-4 h-11">
               Go to Dashboard
             </Button>
           </Link>
           <Link to="/login">
-            <Button variant="outline" className="font-semibold rounded-lg h-11">
+            <Button variant="outline" className="font-semibold rounded-lg px-4 h-11">
               Sign In
             </Button>
           </Link>

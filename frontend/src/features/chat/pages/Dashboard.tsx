@@ -1,67 +1,50 @@
 import { useSelector } from "react-redux";
 import useChat from "../hooks/useChat";
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Copy,
   Ellipsis,
-  LogOut,
   Paperclip,
   SendHorizontal,
   ThumbsDown,
   ThumbsUp,
   X,
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import Sidebar from "../components/Sidebar";
 
-// const staticHistory = [
-//   "Hey, make complete DBMS notes for unit 1",
-//   "Summarize this Java chapter in easy language",
-//   "Create a 7-day revision plan for RGPV exams",
-//   "How to build auth flow in React + Redux?",
-//   "Explain operating system deadlock with examples",
-// ];
-
-const staticChats = [
-  {
-    id: 1,
-    role: "user" as const,
-    message: "heyHey Rishi! What's up? Prepping for those RGPV exams, grinding in the gym, or coding something cool in React?Hey Rishi! What's up? Prepping for those RGPV exams, grinding in the gym, or coding something cool in React?Hey Rishi! What's up? Prepping for those RGPV exams, grinding in the gym, or coding something cool in React?",
-  },
-  {
-    id: 2,
-    role: "ai" as const,
-    message:
-      "Hey Rishi! What's up? Prepping for those RGPV exams, grinding in the gym, or coding something cool in React?",
-  },
-];
 
 type ChatMessage = {
-  id: number;
+  _id: string;
   role: "user" | "ai";
-  message: string;
-  image?: string;
+  content: string;
 };
 
 export default function Dashboard() {
-  const { initializeSocketClient } = useChat();
-  const { user } = useSelector((state: any) => state.auth);
-  const displayName = user?.username || user?.name || "Rishi Tiwari";
-  const avatarLetter = displayName?.charAt(0)?.toUpperCase() || "R";
-  const [messages, setMessages] = useState<ChatMessage[]>(staticChats);
+  const { chatId } = useParams<{ chatId: string }>();
+
+  const {
+    initializeSocketClient,
+    handleGetChats,
+    handleGetMessage,
+    handleSendMessage,
+  } = useChat();
+
+  const { chats: chatMap, loading } = useSelector(
+    (state: any) => state.chat,
+  );
+
+
+  const messages: ChatMessage[] = chatId ? chatMap?.[chatId]?.messages || [] : [];
+
   const [prompt, setPrompt] = useState("");
   const [pendingImage, setPendingImage] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [sending, setSending] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  const { history: chats } = useSelector((state: any) => state.chat);
-  const { handleGetChats } = useChat();
 
   const processImageFile = (file: File) => {
     if (!file.type.startsWith("image/")) return;
@@ -74,28 +57,21 @@ export default function Dashboard() {
     reader.readAsDataURL(file);
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     const text = prompt.trim();
     if (!text && !pendingImage) return;
 
-    const userMessage: ChatMessage = {
-      id: Date.now(),
-      role: "user",
-      message: text || "Image",
-      image: pendingImage || undefined,
-    };
-
-    const aiMessage: ChatMessage = {
-      id: Date.now() + 1,
-      role: "ai",
-      message: pendingImage
-        ? "Nice image. I can analyze or describe it for you. You can now hook this with your backend vision pipeline."
-        : "Great prompt. This is a dummy AI response for the static UI.",
-    };
-
-    setMessages((prev) => [...prev, userMessage, aiMessage]);
-    setPrompt("");
-    setPendingImage(null);
+    try {
+      setSending(true);
+      await handleSendMessage({
+        message: text || "Image",
+        chatId,
+      });
+      setPrompt("");
+      setPendingImage(null);
+    } finally {
+      setSending(false);
+    }
   };
 
 
@@ -104,67 +80,32 @@ export default function Dashboard() {
   },[])
 
   useEffect(() => {
+    if (chatId) {
+      handleGetMessage(chatId);
+    }
+  }, [chatId]);
+
+  useEffect(() => {
     initializeSocketClient();
-  }, [initializeSocketClient]);
+  }, []);
 
   return (
-    <main className="h-screen w-screen flex">
-      <aside className="h-full flex flex-col w-60 p-1 bg-card border-r border-input">
-        <div className="p-3">
-          <h1 className="text-xl font-semibold">Arkio.</h1>
-        </div>
-        <div className="py-8 flex-1">
-          <p className="mb-3 text-xs uppercase tracking-wide text-muted-foreground px-3">
-            History
-          </p>
-          <div className="space-y-1">
-            {chats.map((item: { _id: string }) => (
-              <button
-                key={item._id}
-                type="button"
-                className="w-full rounded-md py-2 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
-              >
-                <span className="px-3 block overflow-hidden whitespace-nowrap mask-[linear-gradient(to_right,black_78%,transparent)]">
-                  {item.title}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="py-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="flex w-full px-3 items-center gap-3 rounded-lg py-2 text-left hover:bg-muted">
-                <Avatar>
-                  <AvatarImage src={user?.profileImage} alt={displayName} />
-                  <AvatarFallback>{avatarLetter}</AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-foreground">
-                    {displayName}
-                  </p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    Personal account
-                  </p>
-                </div>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="top" align="start" className="mb-1">
-              <DropdownMenuItem variant="destructive">
-                <LogOut className="size-4" />
-                Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </aside>
+    <main className="flex h-screen w-screen overflow-hidden">
+      <Sidebar/>
 
-      <section className="w-full p-10">
-        <div className="mx-auto flex h-full w-full max-w-3xl flex-col">
-          <div className="flex-1 space-y-7 overflow-y-auto pb-6 pt-4">
+      <section className="min-h-0 w-full p-10 overflow-hidden">
+        <div className="mx-auto flex h-full w-full max-w-3xl min-h-0 flex-col">
+          <div className="hide-scrollbar flex-1 space-y-7 overflow-y-auto pb-6 pt-4">
+            {messages.length === 0 && (
+              <div className="rounded-xl border border-dashed border-input bg-muted/40 p-6 text-center text-sm text-muted-foreground">
+                {loading
+                  ? "Loading chat messages..."
+                  : "Start by asking a question to get your first AI response."}
+              </div>
+            )}
             {messages.map((chat) => (
               <div
-                key={chat.id}
+                key={chat._id}
                 className={chat.role === "user" ? "flex justify-end" : "flex justify-start"}
               >
                 <div className={chat.role === "user" ? "max-w-[78%]" : "max-w-full"}>
@@ -172,17 +113,59 @@ export default function Dashboard() {
                     className={
                       chat.role === "user"
                         ? "ml-auto w-fit rounded-2xl bg-muted px-4 py-2 text-sm text-foreground"
-                        : "rounded-2xl px-1 py-1 text-3xl leading-relaxed text-foreground md:text-4xl"
+                        : "rounded-2xl px-1 py-1 text-sm leading-6 text-foreground md:text-base"
                     }
                   >
-                    {chat.role === "ai" ? <p className="text-lg md:text-3xl">{chat.message}</p> : chat.message}
+                    {chat.role === "ai" ? (
+                      <ReactMarkdown
+                        components={{
+                          p: ({ children }) => (
+                            <p className="mb-3 text-sm leading-6 text-foreground last:mb-0 md:text-base">
+                              {children}
+                            </p>
+                          ),
+                          h1: ({ children }) => (
+                            <h1 className="mb-3 text-base font-semibold tracking-tight text-foreground md:text-lg">
+                              {children}
+                            </h1>
+                          ),
+                          h2: ({ children }) => (
+                            <h2 className="mb-3 text-sm font-semibold tracking-tight text-foreground md:text-base">
+                              {children}
+                            </h2>
+                          ),
+                          ul: ({ children }) => (
+                            <ul className="mb-3 ml-5 list-disc space-y-1 text-sm leading-6 text-foreground last:mb-0 md:text-base">
+                              {children}
+                            </ul>
+                          ),
+                          ol: ({ children }) => (
+                            <ol className="mb-3 ml-5 list-decimal space-y-1 text-sm leading-6 text-foreground last:mb-0 md:text-base">
+                              {children}
+                            </ol>
+                          ),
+                          li: ({ children }) => <li className="pl-1">{children}</li>,
+                          code: ({ children, className }) =>
+                            className ? (
+                              <code className={className}>{children}</code>
+                            ) : (
+                              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-foreground">
+                                {children}
+                              </code>
+                            ),
+                          pre: ({ children }) => (
+                            <pre className="mb-3 overflow-x-auto rounded-xl bg-muted p-3 text-xs leading-5 text-foreground last:mb-0 md:text-sm">
+                              {children}
+                            </pre>
+                          ),
+                        }}
+                      >
+                        {chat.content}
+                      </ReactMarkdown>
+                    ) : (
+                      chat.content
+                    )}
                   </div>
-
-                  {chat.image && (
-                    <div className="mt-2 ml-auto w-fit overflow-hidden rounded-xl border border-input bg-background p-1">
-                      <img src={chat.image} alt="Attached" className="max-h-40 rounded-lg object-cover" />
-                    </div>
-                  )}
 
                   {chat.role === "ai" && (
                     <div className="mt-2 flex items-center gap-1 text-muted-foreground">
@@ -250,6 +233,7 @@ export default function Dashboard() {
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
+                disabled={sending}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
@@ -259,7 +243,13 @@ export default function Dashboard() {
                 placeholder="Ask a follow-up"
                 className="max-h-32 min-h-10 w-full resize-none rounded-md border-none bg-transparent px-2 py-2 text-sm outline-none placeholder:text-muted-foreground"
               />
-              <Button onClick={handleSend} className="mb-1" size="icon-sm" aria-label="Send prompt">
+              <Button
+                onClick={handleSend}
+                className="mb-1"
+                size="icon-sm"
+                aria-label="Send prompt"
+                disabled={sending || (!prompt.trim() && !pendingImage)}
+              >
                 <SendHorizontal className="size-4" />
               </Button>
               <input

@@ -3,6 +3,23 @@ import messageModel from "../models/message.model.js"
 import { generateContent, generateTitle } from "../services/ai.service.js"
 import AppError from "../utils/AppError.js"
 
+export const createChat = async (req, res) => {
+    const { message } = req.body
+    const userId = req.user.id
+
+    const title = await generateTitle(message)
+
+    const chat = await chatModel.create({
+        user: userId,
+        title,
+    })
+
+    res.status(201).json({
+        success: true,
+        data: chat
+    })
+}
+
 export const sendMessage = async (req, res) => {
     const { message, chatId } = req.body
     const userId = req.user.id
@@ -80,7 +97,7 @@ export const getMessages = async (req, res) => {
 
 export const deleteMessages = async (req, res)=> {
     const { chatId } = req.params
-    const userId = req.body.id
+    const userId = req.user.id
 
     const chat = await chatModel.findOneAndDelete({
         _id: chatId,

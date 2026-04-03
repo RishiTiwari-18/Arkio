@@ -1,6 +1,8 @@
 import { useDispatch } from "react-redux";
-import { addMessages, setError, setHistory, setLoading } from "../chats.slice";
+import { useNavigate } from "react-router-dom";
+import { addMessages, setError, setHistory, setLoading, setMessages, setCurrentChatId } from "../chats.slice";
 import {
+  createChat,
   deleteChat,
   getChats,
   getMessage,
@@ -11,6 +13,7 @@ import type { chatPayload } from "../types";
 
 const useChat = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSendMessage = async ({ message, chatId }: chatPayload) => {
     try {
@@ -23,6 +26,12 @@ const useChat = () => {
           newMessages: data.newMessages,
         })
       );
+      
+      // Navigate to chat if it's a new chat
+      if (!chatId) {
+        navigate(`/chat/${data.chatId}`);
+        dispatch(setCurrentChatId(data.chatId));
+      }
 
     } catch (error: any) {
       dispatch(
@@ -52,6 +61,8 @@ const useChat = () => {
     try {
       dispatch(setLoading(true));
       const res = await getMessage(chatId);
+      dispatch(setMessages({ chatId, messages: res.messages }));
+      dispatch(setCurrentChatId(chatId));
       return res;
     } catch (error: any) {
       dispatch(
@@ -75,6 +86,11 @@ const useChat = () => {
       dispatch(setLoading(false));
     }
   };
+
+  const handleNavigateToChat = (chatId: string) => {
+    dispatch(setCurrentChatId(chatId));
+    navigate(`/chat/${chatId}`);
+  };
   
   return {
     initializeSocketClient,
@@ -82,6 +98,7 @@ const useChat = () => {
     handleGetChats,
     handleGetMessage,
     handledDeleteChat,
+    handleNavigateToChat,
   };
 };
 

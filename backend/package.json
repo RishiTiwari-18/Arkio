@@ -16,6 +16,7 @@
     "@langchain/core": "^1.1.36",
     "@langchain/google": "^0.1.8",
     "@langchain/mistralai": "^1.0.7",
+    "@tavily/core": "^0.7.2",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",

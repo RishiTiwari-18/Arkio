@@ -283,10 +283,27 @@
     html {
         @apply font-sans;
         font-family: 'Antic', sans-serif;
+    height: 100%;
+    overflow: hidden;
     }
     body {
         @apply bg-background text-foreground;
         font-family: 'Antic', sans-serif;
+    height: 100%;
+    overflow: hidden;
+  }
+  #root {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
     }
 }
 

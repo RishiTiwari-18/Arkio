@@ -6,6 +6,11 @@ export const sendMessage = async ({message, chatId}: chatPayload) => {
     return res.data
 }
 
+export const createChat = async (message: string) => {
+    const res = await api.post("/chats", {message})
+    return res.data
+}
+
 export const getChats = async () => {
     const res = await api.get("/chats")
     return res.data
@@ -17,6 +22,6 @@ export const getMessage = async (chatId: string) => {
 }
 
 export const deleteChat = async (chatId: string) => {
-    const res = await api.delete(`chats/delete/${chatId}`)
+    const res = await api.delete(`/chats/delete/${chatId}`)
     return res.data
 }
