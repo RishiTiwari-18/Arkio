@@ -21,13 +21,22 @@ export const createChat = async (req, res) => {
 }
 
 export const sendMessage = async (req, res) => {
-    const { message, chatId } = req.body
+    const { message, chatId, image } = req.body
     const userId = req.user.id
+    const normalizedMessage = (message || "").trim()
+
+    if (!normalizedMessage && !image) {
+        throw new AppError("Message or image is required", 400)
+    }
+
+    if (image && !/^data:image\/[a-zA-Z0-9+.-]+;base64,/.test(image)) {
+        throw new AppError("Invalid image format", 400)
+    }
 
     let chat = null;
 
     if (!chatId) {
-        const title = await generateTitle(message)
+        const title = await generateTitle(normalizedMessage || "Image analysis request")
 
         chat = await chatModel.create({
             user: userId,
@@ -41,7 +50,8 @@ export const sendMessage = async (req, res) => {
         chat: currentChatId,
         user: userId,
         role: "user",
-        content: message,
+        content: normalizedMessage || "Please analyze this image.",
+        image: image || null,
     })
 
     const allMessages = await messageModel.find({ chat: currentChatId }).sort({ createdAt: 1 })

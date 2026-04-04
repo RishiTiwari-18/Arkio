@@ -1,12 +1,21 @@
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { addMessages, setError, setHistory, setLoading, setMessages, setCurrentChatId } from "../chats.slice";
 import {
-  createChat,
+  addMessages,
+  appendStreamingChunk,
+  failStreamingMessage,
+  finishStreamingMessage,
+  setError,
+  setHistory,
+  setLoading,
+  setMessages,
+  setCurrentChatId,
+  startStreamingMessage,
+} from "../chats.slice";
+import {
   deleteChat,
   getChats,
   getMessage,
-  sendMessage,
 } from "../services/chat.service";
 import { initializeSocketClient } from "../services/chat.socket";
 import type { chatPayload } from "../types";
@@ -15,31 +24,112 @@ const useChat = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSendMessage = async ({ message, chatId }: chatPayload) => {
-    try {
-      dispatch(setLoading(true));
-      const data = await sendMessage({ message, chatId });
-      dispatch(
-        addMessages({
-          chatId: data.chatId,
-          chat: data.chat,
-          newMessages: data.newMessages,
-        })
-      );
-      
-      // Navigate to chat if it's a new chat
-      if (!chatId) {
-        navigate(`/chat/${data.chatId}`);
-        dispatch(setCurrentChatId(data.chatId));
-      }
+  const handleSendMessage = async ({ message, chatId, image }: chatPayload) => {
+    dispatch(setLoading(true));
 
-    } catch (error: any) {
-      dispatch(
-        setError(error.response?.data?.message || "Failed to send message"),
+    const socket = initializeSocketClient();
+    const requestId = crypto.randomUUID();
+
+    return new Promise<void>((resolve, reject) => {
+      const cleanup = () => {
+        socket.off("chat:stream:start", onStart);
+        socket.off("chat:stream:chunk", onChunk);
+        socket.off("chat:stream:end", onEnd);
+        socket.off("chat:stream:error", onError);
+      };
+
+      const onStart = (payload: any) => {
+        if (payload?.requestId !== requestId) return;
+
+        dispatch(
+          startStreamingMessage({
+            chatId: payload.chatId,
+            requestId,
+          }),
+        );
+      };
+
+      const onChunk = (payload: any) => {
+        if (payload?.requestId !== requestId) return;
+
+        dispatch(
+          appendStreamingChunk({
+            chatId: payload.chatId,
+            requestId,
+            token: payload.token,
+          }),
+        );
+      };
+
+      const onEnd = (payload: any) => {
+        if (payload?.requestId !== requestId) return;
+
+        dispatch(
+          finishStreamingMessage({
+            chatId: payload.chatId,
+            requestId,
+            aiMessage: payload.aiMessage,
+          }),
+        );
+
+        cleanup();
+        dispatch(setLoading(false));
+        resolve();
+      };
+
+      const onError = (payload: any) => {
+        if (payload?.requestId !== requestId) return;
+
+        dispatch(
+          failStreamingMessage({
+            chatId: chatId || payload.chatId,
+            requestId,
+          }),
+        );
+        dispatch(setError(payload?.message || "Failed to send message"));
+
+        cleanup();
+        dispatch(setLoading(false));
+        reject(new Error(payload?.message || "Failed to send message"));
+      };
+
+      socket.on("chat:stream:start", onStart);
+      socket.on("chat:stream:chunk", onChunk);
+      socket.on("chat:stream:end", onEnd);
+      socket.on("chat:stream:error", onError);
+
+      socket.emit(
+        "chat:send",
+        {
+          message,
+          chatId,
+          image,
+          requestId,
+        },
+        (ack: any) => {
+          if (!ack?.success) {
+            cleanup();
+            dispatch(setLoading(false));
+            dispatch(setError(ack?.message || "Failed to send message"));
+            reject(new Error(ack?.message || "Failed to send message"));
+            return;
+          }
+
+          dispatch(
+            addMessages({
+              chatId: ack.chatId,
+              chat: ack.chat,
+              newMessages: [ack.userMessage],
+            }),
+          );
+
+          if (!chatId) {
+            navigate(`/chat/${ack.chatId}`);
+            dispatch(setCurrentChatId(ack.chatId));
+          }
+        },
       );
-    } finally {
-      dispatch(setLoading(false));
-    }
+    });
   };
 
   const handleGetChats = async () => {

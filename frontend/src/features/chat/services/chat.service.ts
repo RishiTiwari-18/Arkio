@@ -1,8 +1,8 @@
 import api from "@/lib/axios";
 import type { chatPayload } from "../types";
 
-export const sendMessage = async ({message, chatId}: chatPayload) => {
-    const res = await api.post("/chats/message", {message, chatId})
+export const sendMessage = async ({message, chatId, image}: chatPayload) => {
+    const res = await api.post("/chats/message", {message, chatId, image})
     return res.data
 }
 

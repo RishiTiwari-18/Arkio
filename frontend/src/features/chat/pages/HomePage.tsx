@@ -31,6 +31,7 @@ export default function HomePage() {
       await handleSendMessage({
         message: text || "Image",
         chatId: undefined,
+        image: pendingImage || undefined,
       });
       setPrompt("");
       setPendingImage(null);

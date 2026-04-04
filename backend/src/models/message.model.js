@@ -24,6 +24,10 @@ const messageSchema = new mongoose.Schema(
 			required: [true, 'Content is required'],
 			trim: true,
 		},
+		image: {
+			type: String,
+			default: null,
+		},
 	},
 	{
 		timestamps: true,

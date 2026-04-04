@@ -20,6 +20,7 @@ type ChatMessage = {
   _id: string;
   role: "user" | "ai";
   content: string;
+  image?: string;
 };
 
 const getCodeText = (node: any): string => {
@@ -60,6 +61,9 @@ export default function Dashboard() {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const copyTimeoutRef = useRef<number | null>(null);
+  const chatScrollRef = useRef<HTMLDivElement | null>(null);
+
+  const lastMessageContent = messages[messages.length - 1]?.content || "";
 
   const handleCopyCode = async (code: string) => {
     try {
@@ -113,8 +117,9 @@ export default function Dashboard() {
     try {
       setSending(true);
       await handleSendMessage({
-        message: text || "Image",
+        message: text,
         chatId,
+        image: pendingImage || undefined,
       });
       setPrompt("");
       setPendingImage(null);
@@ -145,6 +150,14 @@ export default function Dashboard() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    const container = chatScrollRef.current;
+    if (!container) return;
+
+    // Keep the newest streamed tokens in view.
+    container.scrollTop = container.scrollHeight;
+  }, [chatId, messages.length, lastMessageContent]);
 
   const markdownComponents: any = {
     p: ({ children }: { children: React.ReactNode }) => (
@@ -283,7 +296,7 @@ export default function Dashboard() {
 
       <section className="min-h-0 w-full p-10 overflow-hidden">
         <div className="mx-auto flex h-full w-full max-w-3xl min-h-0 flex-col">
-          <div className="hide-scrollbar flex-1 space-y-7 overflow-y-auto pb-6 pt-4">
+          <div ref={chatScrollRef} className="hide-scrollbar flex-1 space-y-7 overflow-y-auto pb-6 pt-4">
             {messages.length === 0 && (
               <div className="rounded-xl border border-dashed border-input bg-muted/40 p-6 text-center text-sm text-muted-foreground">
                 {loading
@@ -315,6 +328,16 @@ export default function Dashboard() {
                       chat.content
                     )}
                   </div>
+
+                  {chat.image && (
+                    <div className="mt-2 overflow-hidden rounded-xl border border-input bg-background p-1">
+                      <img
+                        src={chat.image}
+                        alt="Uploaded by user"
+                        className="max-h-72 w-full rounded-lg object-cover"
+                      />
+                    </div>
+                  )}
 
                   {chat.role === "ai" && (
                     <div className="mt-2 flex items-center gap-1 text-muted-foreground">
@@ -370,15 +393,15 @@ export default function Dashboard() {
               </div>
             )}
 
-            <div className="flex items-end gap-2">
-              <button
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="mb-1 rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground"
                 aria-label="Attach image"
               >
                 <Paperclip className="size-4" />
-              </button>
+              </Button>
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
@@ -390,12 +413,12 @@ export default function Dashboard() {
                   }
                 }}
                 placeholder="Ask a follow-up"
-                className="max-h-32 min-h-10 w-full resize-none rounded-md border-none bg-transparent px-2 py-2 text-sm outline-none placeholder:text-muted-foreground"
+                className=" w-full resize-none  border-none bg-transparent h-full text-sm outline-none placeholder:text-muted-foreground"
               />
               <Button
                 onClick={handleSend}
-                className="mb-1"
-                size="icon-sm"
+                className="mb-1 rounded-lg"
+                size="icon-lg"
                 aria-label="Send prompt"
                 disabled={sending || (!prompt.trim() && !pendingImage)}
               >

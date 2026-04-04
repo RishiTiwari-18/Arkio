@@ -11,6 +11,8 @@ const google = new ChatGoogle({
     model: "gemini-2.5-flash-lite",
 });
 
+const fallbackResponse = "I could not generate a response for that image.";
+
 // Arkio's system prompt
 const ARKIO_SYSTEM_PROMPT = `You are Arkio, an AI assistant created by Rishi Tiwari to help users across multiple domains — with special expertise in programming, mental wellness, language, relationships, and creative writing.
 
@@ -109,20 +111,87 @@ When refusing:
 - Be brief and respectful
 - Offer an alternative if possible`;
 
+const formatMessagesForModel = (messages) => {
+    return [
+        new SystemMessage(ARKIO_SYSTEM_PROMPT),
+        ...messages.map((msg) => {
+            if (msg.role === "user") {
+                if (msg.image) {
+                    return new HumanMessage({
+                        content: [
+                            {
+                                type: "text",
+                                text: msg.content || "Describe this image in detail.",
+                            },
+                            {
+                                type: "image_url",
+                                image_url: msg.image,
+                            },
+                        ],
+                    });
+                }
+
+                return new HumanMessage(msg.content);
+            }
+
+            if (msg.role === "ai") return new AIMessage(msg.content);
+            return undefined;
+        }),
+    ].filter(Boolean);
+};
+
+const getTextFromContent = (content) => {
+    if (typeof content === "string") return content;
+
+    if (Array.isArray(content)) {
+        return content
+            .map((part) => {
+                if (typeof part === "string") return part;
+                return part?.text || "";
+            })
+            .join("");
+    }
+
+    return "";
+};
+
 export const generateContent = async (messages) => {
     try {
-        const formattedMessages = [
-            new SystemMessage(ARKIO_SYSTEM_PROMPT),
-            ...messages.map((msg) => {
-                if (msg.role === "user") return new HumanMessage(msg.content);
-                if (msg.role === "ai") return new AIMessage(msg.content);
-            }),
-        ].filter(Boolean); // Remove any undefined messages
+        const formattedMessages = formatMessagesForModel(messages);
 
         const response = await google.invoke(formattedMessages);
-        return response.content;
+
+        const content = getTextFromContent(response.content).trim();
+
+        return content || fallbackResponse;
     } catch (error) {
         console.error("Error generating content:", error);
+        throw new Error("Failed to generate response. Please try again.");
+    }
+};
+
+export const generateContentStream = async (messages, { onToken } = {}) => {
+    try {
+        const formattedMessages = formatMessagesForModel(messages);
+        const stream = await google.stream(formattedMessages);
+        let finalText = "";
+
+        for await (const chunk of stream) {
+            const token = getTextFromContent(chunk.content);
+
+            if (!token) continue;
+
+            finalText += token;
+
+            if (typeof onToken === "function") {
+                onToken(token);
+            }
+        }
+
+        const normalized = finalText.trim();
+        return normalized || fallbackResponse;
+    } catch (error) {
+        console.error("Error streaming content:", error);
         throw new Error("Failed to generate response. Please try again.");
     }
 };
