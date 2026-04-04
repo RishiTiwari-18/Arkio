@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import Sidebar from "../components/Sidebar";
 
 
@@ -52,6 +53,9 @@ export default function Dashboard() {
 
 
   const messages: ChatMessage[] = chatId ? chatMap?.[chatId]?.messages || [] : [];
+  const hasPendingAiBubble = messages.some(
+    (msg) => msg.role === "ai" && !(msg.content || "").trim(),
+  );
 
   const [prompt, setPrompt] = useState("");
   const [pendingImage, setPendingImage] = useState<string | null>(null);
@@ -64,6 +68,7 @@ export default function Dashboard() {
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
 
   const lastMessageContent = messages[messages.length - 1]?.content || "";
+  const shouldShowWaitingSkeleton = sending && !hasPendingAiBubble;
 
   const handleCopyCode = async (code: string) => {
     try {
@@ -318,12 +323,16 @@ export default function Dashboard() {
                     }
                   >
                     {chat.role === "ai" ? (
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={markdownComponents}
-                      >
-                        {chat.content}
-                      </ReactMarkdown>
+                      !(chat.content || "").trim() ? (
+                        null
+                      ) : (
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={markdownComponents}
+                        >
+                          {chat.content}
+                        </ReactMarkdown>
+                      )
                     ) : (
                       chat.content
                     )}
@@ -339,7 +348,7 @@ export default function Dashboard() {
                     </div>
                   )}
 
-                  {chat.role === "ai" && (
+                  {chat.role === "ai" && (chat.content || "").trim() && (
                     <div className="mt-2 flex items-center gap-1 text-muted-foreground">
                       <Button
                         size="icon-sm"
@@ -358,6 +367,15 @@ export default function Dashboard() {
                 </div>
               </div>
             ))}
+
+            {shouldShowWaitingSkeleton && (
+              <div className="flex justify-start">
+                <div className="w-full max-w-xl flex flex-col gap-2 rounded-2xl px-1 py-1">
+                    <Skeleton className="h-4 w-11/12" />
+                    <Skeleton className="h-4 w-8/12" />
+                </div>
+              </div>
+            )}
           </div>
 
           <div
