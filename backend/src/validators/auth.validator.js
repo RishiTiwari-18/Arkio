@@ -18,6 +18,7 @@ export const registerValidator = [
 
 export const loginValidator = [
   body('identifier')
+    .trim()
     .notEmpty().withMessage('Identifier is required'),
   body('password').notEmpty().withMessage('Password is required'),
 ]
