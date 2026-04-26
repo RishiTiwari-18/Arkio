@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Clock3, MailCheck, ArrowLeft } from "lucide-react";
+import { Clock3, MailCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import Background from "../components/Background";
 

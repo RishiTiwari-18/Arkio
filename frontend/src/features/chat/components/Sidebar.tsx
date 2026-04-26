@@ -6,21 +6,34 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useChat from "../hooks/useChat";
 import { LogOut} from "lucide-react";
+import useAuth from "@/features/auth/hooks/useAuth";
+import { resetChatState } from "../chats.slice";
 
 export default function Sidebar() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { chatId } = useParams<{ chatId: string }>();
 
   const { handleNavigateToChat } = useChat();
+  const { handleLogout } = useAuth();
   const { user } = useSelector((state: any) => state.auth);
 
   const { history } = useSelector((state: any) => state.chat);
   const displayName = user?.username || "User";
   const displayEmail = user?.email || ""
   const avatarLetter = displayName?.charAt(0)?.toUpperCase() || "U";
+
+  const handleSignOut = async () => {
+    try {
+      await handleLogout();
+    } finally {
+      dispatch(resetChatState());
+      navigate("/login");
+    }
+  };
 
   return (
     <aside className="h-full flex flex-col w-60 p-1 bg-card border-r border-input">
@@ -78,7 +91,7 @@ export default function Sidebar() {
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent side="top" align="start" className="mb-1">
-            <DropdownMenuItem variant="destructive">
+            <DropdownMenuItem variant="destructive" onClick={handleSignOut}>
               <LogOut className="size-4" />
               Sign out
             </DropdownMenuItem>

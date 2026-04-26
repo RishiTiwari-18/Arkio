@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { SendHorizontal, Paperclip, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import useChat from "../hooks/useChat";
 import Sidebar from "../components/Sidebar";
+import PromptComposer from "../components/PromptComposer";
 
 export default function HomePage() {
   const { handleSendMessage, handleGetChats } = useChat();
@@ -59,54 +58,18 @@ export default function HomePage() {
           </div>
 
           <div className="w-full max-w-2xl px-4">
-            <div className="rounded-xl border border-input bg-card p-4 shadow-lg">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSend();
-                  }
-                }}
-                placeholder="Ask me anything or share an image..."
-                className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
-              />
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                variant="ghost"
-                size="icon"
-                className="h-auto p-2"
-              >
-                <Paperclip className="size-4" />
-              </Button>
-              <Button
-                onClick={handleSend}
-                disabled={loading || (!prompt.trim() && !pendingImage)}
-                className="h-auto rounded-lg"
-              >
-                <SendHorizontal className="size-4" />
-              </Button>
-            </div>
-
-            {pendingImage && (
-              <div className="mt-3 relative inline-block overflow-hidden rounded-lg border border-input bg-background p-1">
-                <img
-                  src={pendingImage}
-                  alt="Pending attachment"
-                  className="h-16 w-16 rounded object-cover"
-                />
-                <button
-                  type="button"
-                  onClick={() => setPendingImage(null)}
-                  className="absolute right-1 top-1 rounded-full bg-background/90 p-0.5 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="size-3" />
-                </button>
-              </div>
-            )}
+            <PromptComposer
+              value={prompt}
+              onChange={setPrompt}
+              onSend={handleSend}
+              onAttachClick={() => fileInputRef.current?.click()}
+              onRemoveAttachment={() => setPendingImage(null)}
+              attachmentPreview={pendingImage}
+              placeholder="Ask me anything or share an image..."
+              disabled={loading}
+              sending={loading}
+              maxHeight={180}
+            />
 
             <input
               ref={fileInputRef}
@@ -119,7 +82,6 @@ export default function HomePage() {
                 e.currentTarget.value = "";
               }}
             />
-            </div>
 
             {/* <div className="mt-8 flex flex-col gap-3">
               <p className="text-xs uppercase tracking-wide text-muted-foreground text-center">

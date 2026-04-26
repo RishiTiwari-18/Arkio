@@ -120,6 +120,13 @@ const chatSlice = createSlice({
     setError: (state, action) => {
       state.error = action.payload;
     },
+    resetChatState: (state) => {
+      state.chats = {};
+      state.history = [];
+      state.currentChatId = null;
+      state.loading = false;
+      state.error = null;
+    },
   },
 });
 
@@ -134,6 +141,7 @@ export const {
   setLoading,
   setError,
   setHistory,
+  resetChatState,
 } = chatSlice.actions;
 const chatReducer = chatSlice.reducer;
 export default chatReducer;

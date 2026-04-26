@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import { sendVerificationEmail } from "../services/mail.service.js"
 import AppError from "../utils/AppError.js"
 import buildVerifyPage from "../utils/verifyPage.js"
+import redis from "../config/cache.js"
 
 export const registerController = async (req, res) => {
     const { username, email, password } = req.body
@@ -141,6 +142,22 @@ export const getMeController = async (req, res) => {
     })
 }
 
+export const logoutController = async (req, res) => {
+    const token = req.cookies.token
+
+        await redis.set(token, Date.now().toString(), "EX", 7 * 24 * 60 * 60)
+
+    res.clearCookie("token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+    })
+
+    res.status(200).json({
+        success: true,
+        message: "Logged out successfully",
+    })
+}
 
 // export const resendVerificationController = async (req, res) => {
 //     const { email } = req.body

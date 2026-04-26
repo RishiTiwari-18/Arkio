@@ -7,14 +7,12 @@ import remarkGfm from "remark-gfm";
 import {
   Check,
   Copy,
-  Paperclip,
-  SendHorizontal,
-  X,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import Sidebar from "../components/Sidebar";
+import PromptComposer from "../components/PromptComposer";
 
 
 type ChatMessage = {
@@ -380,8 +378,8 @@ export default function Dashboard() {
 
           <div
             className={[
-              "mt-auto w-full rounded-2xl border bg-card p-3 shadow-lg transition",
-              isDragging ? "border-primary bg-accent/30" : "border-input",
+              "mt-auto w-full transition",
+              isDragging ? "bg-accent/30" : "bg-transparent",
             ].join(" ")}
             onDragOver={(e) => {
               e.preventDefault();
@@ -398,62 +396,34 @@ export default function Dashboard() {
               if (file) processImageFile(file);
             }}
           >
-            {pendingImage && (
-              <div className="mb-3 relative inline-block overflow-hidden rounded-lg border border-input bg-background p-1">
-                <img src={pendingImage} alt="Pending attachment" className="h-16 w-16 rounded object-cover" />
-                <button
-                  type="button"
-                  onClick={() => setPendingImage(null)}
-                  className="absolute right-1 top-1 rounded-full bg-background/90 p-0.5 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="size-3" />
-                </button>
-              </div>
-            )}
+            <PromptComposer
+              value={prompt}
+              onChange={setPrompt}
+              onSend={handleSend}
+              onAttachClick={() => fileInputRef.current?.click()}
+              onRemoveAttachment={() => setPendingImage(null)}
+              attachmentPreview={pendingImage}
+              placeholder="Ask a follow-up"
+              disabled={sending}
+              sending={sending}
+              maxHeight={200}
+              className={[
+                "border bg-card shadow-lg",
+                isDragging ? "border-primary bg-accent/30" : "border-input",
+              ].join(" ")}
+            />
 
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                aria-label="Attach image"
-              >
-                <Paperclip className="size-4" />
-              </Button>
-              <textarea
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                disabled={sending}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSend();
-                  }
-                }}
-                placeholder="Ask a follow-up"
-                className=" w-full resize-none  border-none bg-transparent h-full text-sm outline-none placeholder:text-muted-foreground"
-              />
-              <Button
-                onClick={handleSend}
-                className="mb-1 rounded-lg"
-                size="icon-lg"
-                aria-label="Send prompt"
-                disabled={sending || (!prompt.trim() && !pendingImage)}
-              >
-                <SendHorizontal className="size-4" />
-              </Button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) processImageFile(file);
-                  e.currentTarget.value = "";
-                }}
-              />
-            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) processImageFile(file);
+                e.currentTarget.value = "";
+              }}
+            />
           </div>
 
         </div>

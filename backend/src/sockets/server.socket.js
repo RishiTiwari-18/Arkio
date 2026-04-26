@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import chatModel from "../models/chat.model.js";
 import messageModel from "../models/message.model.js";
 import { generateContentStream, generateTitle } from "../services/ai.service.js";
+import redis from "../config/cache.js";
 
 let io;
 
@@ -24,7 +25,7 @@ const parseCookies = (cookieHeader = "") => {
 export function SocketServer(app) {
     io = new Server(app, {
         cors: {
-            origin: "http://localhost:5173",
+            origin: process.env.CLIENT_URL || "http://localhost:5173",
             credentials: true
         },
     })
