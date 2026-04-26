@@ -10,6 +10,7 @@ type PromptComposerProps = {
   onChange: (value: string) => void
   onSend: () => void | Promise<void>
   onAttachClick?: () => void
+  onAttachmentDrop?: (file: File) => void
   onRemoveAttachment?: () => void
   attachmentPreview?: string | null
   placeholder?: string
@@ -26,6 +27,7 @@ const PromptComposer = ({
   onChange,
   onSend,
   onAttachClick,
+  onAttachmentDrop,
   onRemoveAttachment,
   attachmentPreview,
   placeholder = "Ask me anything...",
@@ -37,6 +39,8 @@ const PromptComposer = ({
   attachLabel = "Attach image",
 }: PromptComposerProps) => {
   const textareaRef = React.useRef<HTMLTextAreaElement | null>(null)
+  const [isDragging, setIsDragging] = React.useState(false)
+  const dragDepthRef = React.useRef(0)
 
   React.useEffect(() => {
     const element = textareaRef.current
@@ -60,8 +64,58 @@ const PromptComposer = ({
     onChange(event.target.value)
   }
 
+  const handleDragEnter = (event: React.DragEvent<HTMLDivElement>) => {
+    if (!onAttachmentDrop) return
+    event.preventDefault()
+    dragDepthRef.current += 1
+    setIsDragging(true)
+  }
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    if (!onAttachmentDrop) return
+    event.preventDefault()
+  }
+
+  const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
+    if (!onAttachmentDrop) return
+    event.preventDefault()
+    dragDepthRef.current = Math.max(0, dragDepthRef.current - 1)
+
+    if (dragDepthRef.current === 0) {
+      setIsDragging(false)
+    }
+  }
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    if (!onAttachmentDrop) return
+    event.preventDefault()
+    dragDepthRef.current = 0
+    setIsDragging(false)
+
+    const file = event.dataTransfer.files?.[0]
+    if (file) {
+      onAttachmentDrop(file)
+    }
+  }
+
   return (
-    <div className={cn("rounded-xl border border-input bg-card p-4 shadow-lg", className)}>
+    <div
+      className={cn(
+        "rounded-xl border border-input bg-card p-4 shadow-lg transition",
+        onAttachmentDrop && isDragging && "border-primary bg-accent/30",
+        className,
+      )}
+      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {onAttachmentDrop && isDragging && (
+        <div className="mb-3 rounded-md border border-dashed border-primary/80 bg-background/80 px-3 py-2 text-xs text-muted-foreground">
+          Drop image to attach
+        </div>
+      )}
+
       <Textarea
         ref={textareaRef}
         value={value}

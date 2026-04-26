@@ -57,7 +57,6 @@ export default function Dashboard() {
 
   const [prompt, setPrompt] = useState("");
   const [pendingImage, setPendingImage] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
   const [sending, setSending] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
@@ -376,41 +375,20 @@ export default function Dashboard() {
             )}
           </div>
 
-          <div
-            className={[
-              "mt-auto w-full pb-2 transition sm:pb-0",
-              isDragging ? "bg-accent/30" : "bg-transparent",
-            ].join(" ")}
-            onDragOver={(e) => {
-              e.preventDefault();
-              setIsDragging(true);
-            }}
-            onDragLeave={(e) => {
-              e.preventDefault();
-              setIsDragging(false);
-            }}
-            onDrop={(e) => {
-              e.preventDefault();
-              setIsDragging(false);
-              const file = e.dataTransfer.files?.[0];
-              if (file) processImageFile(file);
-            }}
-          >
+          <div className="mt-auto w-full pb-2 sm:pb-0">
             <PromptComposer
               value={prompt}
               onChange={setPrompt}
               onSend={handleSend}
               onAttachClick={() => fileInputRef.current?.click()}
+              onAttachmentDrop={processImageFile}
               onRemoveAttachment={() => setPendingImage(null)}
               attachmentPreview={pendingImage}
               placeholder="Ask a follow-up"
               disabled={sending}
               sending={sending}
               maxHeight={200}
-              className={[
-                "border bg-card shadow-lg",
-                isDragging ? "border-primary bg-accent/30" : "border-input",
-              ].join(" ")}
+              className="border border-input bg-card shadow-lg"
             />
 
             <input

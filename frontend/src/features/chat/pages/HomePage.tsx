@@ -57,12 +57,13 @@ export default function HomePage() {
             <h1 className="mb-2 text-2xl leading-tight sm:text-2xl lg:text-3xl">What's on your mind today?</h1>
           </div>
 
-          <div className="mt-auto w-full max-w-2xl px-0 pb-2 sm:px-2 sm:pb-0 md:px-4">
+          <div className="mt-auto w-full px-0 pb-2 sm:px-2 sm:pb-0 md:px-4">
             <PromptComposer
               value={prompt}
               onChange={setPrompt}
               onSend={handleSend}
               onAttachClick={() => fileInputRef.current?.click()}
+              onAttachmentDrop={processImageFile}
               onRemoveAttachment={() => setPendingImage(null)}
               attachmentPreview={pendingImage}
               placeholder="Ask me anything or share an image..."
