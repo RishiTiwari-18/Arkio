@@ -23,9 +23,9 @@ app.use(morgan('dev'))
 app.use("/api/auth", authRouter)
 app.use("/api/chats", chatRouter)
 
-// app.get('/', (req, res) => {
-// 	res.status(200).json({ message: 'Server is running' });
-// });
+app.get('/health', (req, res) => {
+	res.status(200).json({ message: 'Server is running' });
+});
 
 app.use(notFound)
 app.use(errorHandler)
