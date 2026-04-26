@@ -107,7 +107,7 @@ const PromptComposer = ({
               <Paperclip className="size-4" />
             </Button>
           )}
-          <p className="text-xs text-muted-foreground">Press Enter to send, Shift+Enter for a new line</p>
+          <p className="text-xs text-muted-foreground max-lg:hidden">Press Enter to send, Shift+Enter for a new line</p>
         </div>
 
         <Button

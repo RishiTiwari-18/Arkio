@@ -294,12 +294,12 @@ export default function Dashboard() {
   };
 
   return (
-    <main className="flex h-screen w-screen overflow-hidden">
+    <main className="flex h-dvh w-full flex-col overflow-hidden md:h-screen md:flex-row">
       <Sidebar/>
 
-      <section className="min-h-0 w-full p-10 overflow-hidden">
-        <div className="mx-auto flex h-full w-full max-w-3xl min-h-0 flex-col">
-          <div ref={chatScrollRef} className="hide-scrollbar flex-1 space-y-7 overflow-y-auto pb-6 pt-4">
+      <section className="flex min-h-0 flex-1 w-full overflow-hidden p-3 sm:p-5 md:p-10">
+        <div className="mx-auto flex h-full min-h-0 w-full max-w-4xl flex-1 flex-col">
+          <div ref={chatScrollRef} className="hide-scrollbar flex-1 space-y-5 overflow-y-auto pb-4 pt-2 sm:space-y-7 sm:pb-6 sm:pt-4">
             {messages.length === 0 && (
               <div className="rounded-xl border border-dashed border-input bg-muted/40 p-6 text-center text-sm text-muted-foreground">
                 {loading
@@ -312,11 +312,11 @@ export default function Dashboard() {
                 key={chat._id}
                 className={chat.role === "user" ? "flex justify-end" : "flex justify-start"}
               >
-                <div className={chat.role === "user" ? "max-w-[78%]" : "max-w-full"}>
+                <div className={chat.role === "user" ? "max-w-[88%] sm:max-w-[78%]" : "max-w-full"}>
                   <div
                     className={
                       chat.role === "user"
-                        ? "ml-auto w-fit rounded-2xl bg-muted px-4 py-2 text-sm text-foreground"
+                        ? "ml-auto w-fit rounded-2xl bg-muted px-3 py-2 text-sm text-foreground sm:px-4"
                         : "rounded-2xl px-1 py-1 text-sm leading-6 text-foreground md:text-base"
                     }
                   >
@@ -378,7 +378,7 @@ export default function Dashboard() {
 
           <div
             className={[
-              "mt-auto w-full transition",
+              "mt-auto w-full pb-2 transition sm:pb-0",
               isDragging ? "bg-accent/30" : "bg-transparent",
             ].join(" ")}
             onDragOver={(e) => {

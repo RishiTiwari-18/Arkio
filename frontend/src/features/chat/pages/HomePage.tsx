@@ -48,16 +48,16 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="flex h-screen w-screen overflow-hidden">
+    <main className="flex h-dvh w-full flex-col overflow-hidden md:h-screen md:flex-row">
       <Sidebar />
 
-      <section className="min-h-0 w-full overflow-hidden p-10">
-        <div className="mx-auto flex h-full w-full max-w-3xl min-h-0 flex-col items-center justify-center">
-          <div className="mb-16 text-center">
-            <h1 className="mb-2 text-xl  leading-tight sm:text-2xl lg:text-3xl ">What's on your mind today?</h1>
+      <section className="flex min-h-0 flex-1 w-full overflow-hidden p-4 sm:p-6 md:p-10">
+        <div className="mx-auto flex h-full min-h-0 w-full max-w-3xl flex-col">
+          <div className="flex flex-1 items-center justify-center text-center">
+            <h1 className="mb-2 text-2xl leading-tight sm:text-2xl lg:text-3xl">What's on your mind today?</h1>
           </div>
 
-          <div className="w-full max-w-2xl px-4">
+          <div className="mt-auto w-full max-w-2xl px-0 pb-2 sm:px-2 sm:pb-0 md:px-4">
             <PromptComposer
               value={prompt}
               onChange={setPrompt}
