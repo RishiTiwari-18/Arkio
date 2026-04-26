@@ -109,9 +109,9 @@ export const loginController = async (req, res) => {
     res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000 
-    })
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     res.status(200).json({
         success: true,
@@ -143,21 +143,31 @@ export const getMeController = async (req, res) => {
 }
 
 export const logoutController = async (req, res) => {
-    const token = req.cookies.token
+  const token = req.cookies.token;
 
-        await redis.set(token, Date.now().toString(), "EX", 7 * 24 * 60 * 60)
+  if (!token) {
+    return res.status(400).json({
+      success: false,
+      message: "No token provided",
+    });
+  }
 
-    res.clearCookie("token", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-    })
+  const decoded = jwt.decode(token);
+  const expiry = decoded.exp - Math.floor(Date.now() / 1000);
 
-    res.status(200).json({
-        success: true,
-        message: "Logged out successfully",
-    })
-}
+  await redis.set(token, "blacklisted", "EX", expiry);
+
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
+};
 
 // export const resendVerificationController = async (req, res) => {
 //     const { email } = req.body
