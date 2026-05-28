@@ -163,7 +163,7 @@ export default function Dashboard() {
 
   const markdownComponents: any = {
     p: ({ children }: { children: React.ReactNode }) => (
-      <p className="mb-4 text-sm leading-7 text-foreground/90 last:mb-0 md:text-[15px]">
+      <p className="mb-4  leading-7 text-foreground/90 last:mb-0 text-base">
         {children}
       </p>
     ),
@@ -188,18 +188,18 @@ export default function Dashboard() {
       </h4>
     ),
     ul: ({ children }: { children: React.ReactNode }) => (
-      <ul className="mb-4 ml-5 list-disc space-y-2 text-sm leading-7 text-foreground/90 md:text-[15px]">
+      <ul className="mb-4 ml-5 list-disc space-y-2 text-[15px] leading-7 text-foreground/90 md:text-base">
         {children}
       </ul>
     ),
     ol: ({ children }: { children: React.ReactNode }) => (
-      <ol className="mb-4 ml-5 list-decimal space-y-2 text-sm leading-7 text-foreground/90 md:text-[15px]">
+      <ol className="mb-4 ml-5 list-decimal space-y-2 text-[15px] leading-7 text-foreground/90 md:text-base">
         {children}
       </ol>
     ),
     li: ({ children }: { children: React.ReactNode }) => <li className="pl-1">{children}</li>,
     blockquote: ({ children }: { children: React.ReactNode }) => (
-      <blockquote className="mb-4 border-l-4 border-primary/50 bg-muted/40 px-4 py-3 text-sm italic text-foreground/85 md:text-[15px]">
+      <blockquote className="mb-4 border-l-4 border-primary/50 bg-muted/40 px-4 py-3 text-[15px] italic text-foreground/85 md:text-base">
         {children}
       </blockquote>
     ),
@@ -300,7 +300,7 @@ export default function Dashboard() {
         <div className="mx-auto flex h-full min-h-0 w-full max-w-4xl flex-1 flex-col">
           <div ref={chatScrollRef} className="hide-scrollbar flex-1 space-y-5 overflow-y-auto pb-4 pt-2 sm:space-y-7 sm:pb-6 sm:pt-4">
             {messages.length === 0 && (
-              <div className="rounded-xl border border-dashed border-input bg-muted/40 p-6 text-center text-sm text-muted-foreground">
+              <div className="rounded-xl border border-dashed border-input bg-muted/40 p-6 text-center text-[15px] text-muted-foreground md:text-base">
                 {loading
                   ? "Loading chat messages..."
                   : "Start by asking a question to get your first AI response."}
@@ -315,8 +315,8 @@ export default function Dashboard() {
                   <div
                     className={
                       chat.role === "user"
-                        ? "ml-auto w-fit rounded-2xl bg-muted px-3 py-2 text-sm text-foreground sm:px-4"
-                        : "rounded-2xl px-1 py-1 text-sm leading-6 text-foreground md:text-base"
+                        ? "ml-auto w-fit rounded-2xl bg-muted px-3 py-2 text-base text-foreground sm:px-4"
+                        : "rounded-2xl px-1 py-1 text-base leading-7 text-foreground"
                     }
                   >
                     {chat.role === "ai" ? (

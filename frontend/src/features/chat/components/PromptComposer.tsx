@@ -123,7 +123,7 @@ const PromptComposer = ({
         onKeyDown={handleKeyDown}
         disabled={disabled || sending}
         placeholder={placeholder}
-        className="min-h-8 border-0 bg-transparent px-0 py-0 text-sm shadow-none focus-visible:ring-0 dark:bg-transparent"
+        className="min-h-8 border-0 bg-transparent px-0 py-0 text-md shadow-none focus-visible:ring-0 dark:bg-transparent"
       />
 
       {attachmentPreview && (

@@ -2,11 +2,15 @@ import nodemailer from 'nodemailer'
 import { verificationEmailTemplate } from '../utils/emailTemplates.js'
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    family: 4, // force IPv4
+
     auth: {
-            user: process.env.GOOGLE_USER,
-            pass: process.env.GOOGLE_APP_PASSWORD,
-        },
+        user: process.env.GOOGLE_USER,
+        pass: process.env.GOOGLE_APP_PASSWORD,
+    },
 });
 
 transporter.verify()
