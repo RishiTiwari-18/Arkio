@@ -5,13 +5,17 @@ const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
     secure: false,
-    family: 4, // force IPv4
+    family: 4,
 
     auth: {
         user: process.env.GOOGLE_USER,
         pass: process.env.GOOGLE_APP_PASSWORD,
     },
-});
+
+    tls: {
+        rejectUnauthorized: false
+    }
+})
 
 transporter.verify()
     .then(() => console.error('Email server is ready to send messages'))
