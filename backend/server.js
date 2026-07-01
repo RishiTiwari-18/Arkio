@@ -1,8 +1,11 @@
 import 'dotenv/config';
+import dns from 'dns';
 import app from './src/app.js';
 import connectDB from './src/config/database.js';
 import { createServer } from "http";
 import { SocketServer } from './src/sockets/server.socket.js';
+
+dns.setDefaultResultOrder('ipv4first');
 
 const http = createServer(app)
 

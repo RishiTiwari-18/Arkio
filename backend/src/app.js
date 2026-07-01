@@ -8,12 +8,19 @@ import morgan from 'morgan';
 import chatRouter from './routes/chat.route.js';
 
 const app = express();
+const allowedOrigins = [
+    process.env.CLIENT_URL,
+    process.env.FRONTEND_URL,
+    'https://arkio.tech',
+    'https://www.arkio.tech',
+    'http://localhost:5173',
+].filter(Boolean)
 
 app.set("trust proxy", 1); 
 app.use(express.json({ limit: '12mb' }));
 app.use(cookieParser())
 app.use(cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: allowedOrigins,
     credentials: true,
 }))
 app.use(morgan('dev'))

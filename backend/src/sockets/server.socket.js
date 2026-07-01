@@ -5,6 +5,13 @@ import messageModel from "../models/message.model.js";
 import { generateContentStream, generateTitle } from "../services/ai.service.js";
 
 let io;
+const allowedOrigins = [
+    process.env.CLIENT_URL,
+    process.env.FRONTEND_URL,
+    'https://arkio.tech',
+    'https://www.arkio.tech',
+    'http://localhost:5173',
+].filter(Boolean)
 
 const parseCookies = (cookieHeader = "") => {
     return cookieHeader
@@ -24,7 +31,7 @@ const parseCookies = (cookieHeader = "") => {
 export function SocketServer(app) {
     io = new Server(app, {
         cors: {
-            origin: process.env.CLIENT_URL || "http://localhost:5173",
+            origin: allowedOrigins,
             credentials: true
         },
     })
