@@ -12,9 +12,51 @@ const google = new ChatGoogle({
     model: "gemini-2.5-flash-lite",
 });
 
-const fallbackResponse = "I could not generate a response for that image.";
+const fallbackResponse = "I could not generate a response right now.";
 const WEB_CACHE_TTL_MS = 2 * 60 * 1000;
 const tavilyCache = new Map();
+const TRANSIENT_MODEL_STATUS_CODES = new Set([429, 503]);
+
+const getModelErrorStatus = (error) => error?.statusCode || error?.status || error?.response?.status;
+
+const isTransientModelError = (error) => {
+    const status = getModelErrorStatus(error);
+
+    if (TRANSIENT_MODEL_STATUS_CODES.has(status)) {
+        return true;
+    }
+
+    const message = (error?.message || "").toLowerCase();
+
+    return /high demand|service unavailable|rate limit|temporarily unavailable/.test(message);
+};
+
+const hasImageMessage = (messages = []) => messages.some((msg) => Boolean(msg?.image));
+
+const getFallbackResponse = (messages = []) => {
+    if (hasImageMessage(messages)) {
+        return "I could not analyze this image right now.";
+    }
+
+    return fallbackResponse;
+};
+
+const fallbackToMistral = async (messages, onToken) => {
+    if (hasImageMessage(messages)) {
+        return getFallbackResponse(messages);
+    }
+
+    const webContext = await fetchWebContextIfNeeded(messages);
+    const formattedMessages = formatMessagesForModel(messages, webContext);
+    const response = await mistral.invoke(formattedMessages);
+    const content = getTextFromContent(response.content).trim();
+
+    if (content && typeof onToken === "function") {
+        onToken(content);
+    }
+
+    return content || getFallbackResponse(messages);
+};
 
 // Arkio's system prompt
 const ARKIO_SYSTEM_PROMPT = `You are Arkio, an AI assistant created by Rishi Tiwari to help users across multiple domains — with special expertise in programming, mental wellness, language, relationships, and creative writing.
@@ -258,9 +300,19 @@ export const generateContent = async (messages) => {
 
         const content = getTextFromContent(response.content).trim();
 
-        return content || fallbackResponse;
+        return content || getFallbackResponse(messages);
     } catch (error) {
         console.error("Error generating content:", error);
+
+        if (isTransientModelError(error)) {
+            try {
+                return await fallbackToMistral(messages);
+            } catch (fallbackError) {
+                console.error("Fallback content generation failed:", fallbackError);
+                return getFallbackResponse(messages);
+            }
+        }
+
         throw new Error("Failed to generate response. Please try again.");
     }
 };
@@ -285,9 +337,19 @@ export const generateContentStream = async (messages, { onToken } = {}) => {
         }
 
         const normalized = finalText.trim();
-        return normalized || fallbackResponse;
+        return normalized || getFallbackResponse(messages);
     } catch (error) {
         console.error("Error streaming content:", error);
+
+        if (isTransientModelError(error)) {
+            try {
+                return await fallbackToMistral(messages, onToken);
+            } catch (fallbackError) {
+                console.error("Fallback streaming generation failed:", fallbackError);
+                return getFallbackResponse(messages);
+            }
+        }
+
         throw new Error("Failed to generate response. Please try again.");
     }
 };

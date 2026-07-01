@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import chatModel from "../models/chat.model.js";
 import messageModel from "../models/message.model.js";
 import { generateContentStream, generateTitle } from "../services/ai.service.js";
-import redis from "../config/cache.js";
 
 let io;
 

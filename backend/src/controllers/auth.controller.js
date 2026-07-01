@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken'
 import { sendVerificationEmail } from "../services/mail.service.js"
 import AppError from "../utils/AppError.js"
 import buildVerifyPage from "../utils/verifyPage.js"
-import redis from "../config/cache.js"
 
 export const registerController = async (req, res) => {
     const { username, email, password } = req.body
@@ -151,11 +150,6 @@ export const logoutController = async (req, res) => {
       message: "No token provided",
     });
   }
-
-  const decoded = jwt.decode(token);
-  const expiry = decoded.exp - Math.floor(Date.now() / 1000);
-
-  await redis.set(token, "blacklisted", "EX", expiry);
 
   res.clearCookie("token", {
     httpOnly: true,
