@@ -1,8 +1,9 @@
 import userModel from "../models/user.model.js"
 import jwt from 'jsonwebtoken'
-import { sendVerificationEmail } from "../services/mail.service.js"
+// Email verification temporarily disabled — reconnect these when re-enabling:
+// import { sendVerificationEmail } from "../services/mail.service.js"
+// import buildVerifyPage from "../utils/verifyPage.js"
 import AppError from "../utils/AppError.js"
-import buildVerifyPage from "../utils/verifyPage.js"
 
 export const registerController = async (req, res) => {
     const { username, email, password } = req.body
@@ -15,11 +16,12 @@ export const registerController = async (req, res) => {
         throw new AppError("User already exists", 409)
     }
 
-    const user = await userModel.create({ username, email, password })
+    // isVerified: true while email verification is disabled
+    const user = await userModel.create({ username, email, password, isVerified: true })
 
-    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" })
-
-    await sendVerificationEmail({ name: user.username, email: user.email, token })
+    // --- Email verification (reconnect later) ---
+    // const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: "1h" })
+    // await sendVerificationEmail({ name: user.username, email: user.email, token })
 
     res.status(201).json({
         success: true,
@@ -33,54 +35,55 @@ export const registerController = async (req, res) => {
 
 }
 
-export const verifyEmailController = async (req, res) => {
-    const { token } = req.query
-
-    if (!token) {
-        return res.status(400).send(buildVerifyPage({
-            success: false,
-            title: 'Link expired',
-            message: 'This verification link has expired or has already been used.',
-        }))
-    }
-
-    let decode
-    try {
-        decode = jwt.verify(token, process.env.JWT_SECRET)
-    } catch (error) {
-        return res.status(400).send(buildVerifyPage({
-            success: false,
-            title: 'Link expired',
-            message: 'This verification link has expired or has already been used.',
-        }))
-    }
-
-    const user = await userModel.findOne({ email: decode.email })
-
-    if (!user) {
-        return res.status(404).send(buildVerifyPage({
-            success: false,
-            title: 'Account not found',
-            message: 'We could not find an account for this verification link. Please register again or request a new verification email.',
-        }))
-    }
-
-    if (user.isVerified) {
-        return res.status(400).send(buildVerifyPage({
-            success: false,
-            title: 'Email already verified',
-            message: 'Your email is already verified. You can log in to your Arkio. account.',
-        }))
-    }
-
-    user.isVerified = true
-    await user.save()
-    return res.status(200).send(buildVerifyPage({
-        success: true,
-        title: 'Email verified',
-        message: 'Your email address has been verified successfully. You can now log in to your Arkio. account.',
-    }))
-}
+// --- Email verification controller (reconnect later) ---
+// export const verifyEmailController = async (req, res) => {
+//     const { token } = req.query
+//
+//     if (!token) {
+//         return res.status(400).send(buildVerifyPage({
+//             success: false,
+//             title: 'Link expired',
+//             message: 'This verification link has expired or has already been used.',
+//         }))
+//     }
+//
+//     let decode
+//     try {
+//         decode = jwt.verify(token, process.env.JWT_SECRET)
+//     } catch (error) {
+//         return res.status(400).send(buildVerifyPage({
+//             success: false,
+//             title: 'Link expired',
+//             message: 'This verification link has expired or has already been used.',
+//         }))
+//     }
+//
+//     const user = await userModel.findOne({ email: decode.email })
+//
+//     if (!user) {
+//         return res.status(404).send(buildVerifyPage({
+//             success: false,
+//             title: 'Account not found',
+//             message: 'We could not find an account for this verification link. Please register again or request a new verification email.',
+//         }))
+//     }
+//
+//     if (user.isVerified) {
+//         return res.status(400).send(buildVerifyPage({
+//             success: false,
+//             title: 'Email already verified',
+//             message: 'Your email is already verified. You can log in to your Arkio. account.',
+//         }))
+//     }
+//
+//     user.isVerified = true
+//     await user.save()
+//     return res.status(200).send(buildVerifyPage({
+//         success: true,
+//         title: 'Email verified',
+//         message: 'Your email address has been verified successfully. You can now log in to your Arkio. account.',
+//     }))
+// }
 
 export const loginController = async (req, res) => {
     const {identifier, password} = req.body
@@ -93,9 +96,10 @@ export const loginController = async (req, res) => {
         throw new AppError("Invalid credentials", 401)
     }
 
-    if(!user.isVerified){
-        throw new AppError("Email not verified. Please verify your email before logging in.", 401)
-    }
+    // --- Email verification check (reconnect later) ---
+    // if(!user.isVerified){
+    //     throw new AppError("Email not verified. Please verify your email before logging in.", 401)
+    // }
 
     const isMatch = await user.comparePassword(password)
 

@@ -26,9 +26,10 @@ const userSchema = new mongoose.Schema(
 		// 	type: String,
 		// 	default: '',
 		// },
+		// default true while email verification is disabled; set back to false when re-enabling
 		isVerified: {
 			type: Boolean,
-			default: false,
+			default: true,
 		},
 	},
 	{

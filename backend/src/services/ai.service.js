@@ -1,10 +1,11 @@
-import { ChatMistralAI } from "@langchain/mistralai";
+import { ChatGroq } from "@langchain/groq";
 import { ChatGoogle } from "@langchain/google";
 import { tavily } from "@tavily/core";
 import { HumanMessage, SystemMessage, AIMessage } from "langchain";
 
-const mistral = new ChatMistralAI({
-    model: "mistral-small-latest",
+const groq = new ChatGroq({
+    apiKey: process.env.GROQ_API_KEY,
+    model: "openai/gpt-oss-20b",
 });
 
 const google = new ChatGoogle({
@@ -41,14 +42,14 @@ const getFallbackResponse = (messages = []) => {
     return fallbackResponse;
 };
 
-const fallbackToMistral = async (messages, onToken) => {
+const fallbackToGroq = async (messages, onToken) => {
     if (hasImageMessage(messages)) {
         return getFallbackResponse(messages);
     }
 
     const webContext = await fetchWebContextIfNeeded(messages);
     const formattedMessages = formatMessagesForModel(messages, webContext);
-    const response = await mistral.invoke(formattedMessages);
+    const response = await groq.invoke(formattedMessages);
     const content = getTextFromContent(response.content).trim();
 
     if (content && typeof onToken === "function") {
@@ -306,7 +307,7 @@ export const generateContent = async (messages) => {
 
         if (isTransientModelError(error)) {
             try {
-                return await fallbackToMistral(messages);
+                return await fallbackToGroq(messages);
             } catch (fallbackError) {
                 console.error("Fallback content generation failed:", fallbackError);
                 return getFallbackResponse(messages);
@@ -343,7 +344,7 @@ export const generateContentStream = async (messages, { onToken } = {}) => {
 
         if (isTransientModelError(error)) {
             try {
-                return await fallbackToMistral(messages, onToken);
+                return await fallbackToGroq(messages, onToken);
             } catch (fallbackError) {
                 console.error("Fallback streaming generation failed:", fallbackError);
                 return getFallbackResponse(messages);
@@ -356,7 +357,7 @@ export const generateContentStream = async (messages, { onToken } = {}) => {
 
 export const generateTitle = async (message) => {
     try {
-        const response = await mistral.invoke([
+        const response = await groq.invoke([
             new SystemMessage(
                 `You are a helpful assistant that generates titles for the given content.
 User will provide you with some content and you will generate a title for that content. The title should be concise and should capture the essence of the content. The title should be between 5 and 10 words.

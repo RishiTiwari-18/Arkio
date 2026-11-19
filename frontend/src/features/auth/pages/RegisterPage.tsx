@@ -40,8 +40,9 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterPayload) => {
     try {
       await handleRegister(data);
-      toast.success("Verification email sent. Please check your inbox.");
-      navigate("/verify-email");
+      // Email verification disabled — previously: toast + navigate("/verify-email")
+      toast.success("Account created successfully. You can log in now.");
+      navigate("/login");
     } catch (error: any) {
       toast.error(error?.message || "Registration failed");
     }

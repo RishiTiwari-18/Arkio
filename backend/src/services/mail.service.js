@@ -1,36 +1,43 @@
-import nodemailer from 'nodemailer'
-import { verificationEmailTemplate } from '../utils/emailTemplates.js'
+// Email verification temporarily disabled — reconnect by uncommenting below
+// and restoring imports/calls in auth.controller.js + auth.route.js
 
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    family: 4,
+// import nodemailer from 'nodemailer'
+// import { verificationEmailTemplate } from '../utils/emailTemplates.js'
 
-    auth: {
-        user: process.env.GOOGLE_USER,
-        pass: process.env.GOOGLE_APP_PASSWORD,
-    },
+// const transporter = nodemailer.createTransport({
+//     host: 'smtp.gmail.com',
+//     port: 587,
+//     secure: false,
+//     family: 4,
 
-    tls: {
-        rejectUnauthorized: false
-    }
-})
+//     auth: {
+//         user: process.env.GOOGLE_USER,
+//         pass: process.env.GOOGLE_APP_PASSWORD,
+//     },
 
-transporter.verify()
-    .then(() => console.error('Email server is ready to send messages'))
-    .catch((err) => console.log('Error connecting to email server:', err))
+//     tls: {
+//         rejectUnauthorized: false
+//     }
+// })
 
-export const sendVerificationEmail = async ({ name, email, token}) => {
-    const baseUrl = process.env.SERVER_URL || `http://localhost:${process.env.PORT || 3000}`
-    const verificationUrl = `${baseUrl}/api/auth/verify-email?token=${token}`
+// transporter.verify()
+//     .then(() => console.log('Email server is ready to send messages'))
+//     .catch((err) => console.log('Error connecting to email server:', err))
 
-    const html = verificationEmailTemplate({ name, verificationUrl, expiryHours: 1 })
+// export const sendVerificationEmail = async ({ name, email, token}) => {
+//     const baseUrl = process.env.SERVER_URL || `http://localhost:${process.env.PORT || 3000}`
+//     const verificationUrl = `${baseUrl}/api/auth/verify-email?token=${token}`
 
-    await transporter.sendMail({
-        from: `"Arkio. " <${process.env.GOOGLE_USER}>`,
-        to: email,
-        subject: 'Verify your email address — Arkio.',
-        html,
-    })
+//     const html = verificationEmailTemplate({ name, verificationUrl, expiryHours: 1 })
+
+//     await transporter.sendMail({
+//         from: `"Arkio. " <${process.env.GOOGLE_USER}>`,
+//         to: email,
+//         subject: 'Verify your email address — Arkio.',
+//         html,
+//     })
+// }
+
+export const sendVerificationEmail = async () => {
+    // no-op while email verification is disabled
 }

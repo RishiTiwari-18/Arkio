@@ -1,5 +1,7 @@
 import { Router } from "express"
-import { getMeController, loginController, logoutController, registerController, verifyEmailController } from "../controllers/auth.controller.js"
+// Email verification temporarily disabled — reconnect verifyEmailController when re-enabling:
+// import { getMeController, loginController, logoutController, registerController, verifyEmailController } from "../controllers/auth.controller.js"
+import { getMeController, loginController, logoutController, registerController } from "../controllers/auth.controller.js"
 import asyncHandler from "../utils/asyncHandler.js"
 import { loginValidator, registerValidator } from "../validators/auth.validator.js"
 import validate from "../middlewares/validate.js"
@@ -9,8 +11,8 @@ const authRouter = Router()
 
 authRouter.post("/register", registerValidator, validate, asyncHandler(registerController))
 
-authRouter.get("/verify-email", asyncHandler(verifyEmailController))
-
+// --- Email verification routes (reconnect later) ---
+// authRouter.get("/verify-email", asyncHandler(verifyEmailController))
 // authRouter.post("/resend-verification", asyncHandler(resendVerificationController))
 
 authRouter.post("/login", loginValidator, validate,  asyncHandler(loginController))
